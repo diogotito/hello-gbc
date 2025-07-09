@@ -8,6 +8,8 @@
         "*.rbw": "ruby",
         "dungeon_tiles.h": "c",
         "stdint.h": "c",
-        "gb.h": "c"
+        "gb.h": "c",
+        "cgb.h": "c",
+        "ruins.h": "c"
     }
 }

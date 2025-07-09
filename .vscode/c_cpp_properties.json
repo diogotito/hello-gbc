@@ -4,15 +4,9 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${env:GBDK_HOME}/"
+                "${env:GBDK_HOME}/include/**",
+                "${env:GBDK_HOME}/libc_src/**"
             ],
-            // "browse": {
-            //     "path": [
-            //         "${workspaceFolder}",
-            //         "${env:GBDK_HOME}"
-            //         // "${env:GBDK_HOME}/libc_src"
-            //     ]
-            // },
             "defines": [
                 "_DEBUG",
                 "UNICODE",
@@ -24,7 +18,7 @@
                 "__SDCC_REVISION=99999"
             ],
             "windowsSdkVersion": "10.0.26100.0",
-            "compilerPath": "C:\\tools\\gbdk\\bin\\sdcc.exe", // C:\\tools\\gbdk\\bin\\sdcc.exe
+            "compilerPath": "C:\\tools\\gbdk\\bin\\sdcc.exe",
             "cStandard": "c23",
             "cppStandard": "c++17",
             "intelliSenseMode": "${default}",
