@@ -1,0 +1,13 @@
+{
+    "terminal.integrated.env.windows": {
+        "path": "${env:GBDK_HOME}\\bin;${env:PATH}",
+    },
+    "makefile.makePath": "${workspaceFolder}\\.vscode\\wsl_make.bat",
+    "files.associations": {
+        "*.jk": "javascript",
+        "*.rbw": "ruby",
+        "dungeon_tiles.h": "c",
+        "stdint.h": "c",
+        "gb.h": "c"
+    }
+}

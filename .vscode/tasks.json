@@ -1,0 +1,53 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "make (WSL)",
+			"detail": "Builds with make under WSL",
+			"type": "process",
+			"command": "wsl",
+			"args": [
+				"make",
+			],
+			"isBuildCommand": true,
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": false,
+			}
+		},
+		{
+			"label": "make GBDK_DEBUG=ON (WSL)",
+			"detail": "Builds with make under WSL",
+			"type": "process",
+			"command": "wsl",
+			"args": [
+				"make",
+				"GBDK_DEBUG=ON",
+			],
+			"dependsOn": ["make clean (WSL)"],
+			"isBuildCommand": true,
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true,
+			}
+		},
+		{
+			"label": "make clean (WSL)",
+			"detail": "Runs `make clean` with WSL",
+			"type": "process",
+			"command": "wsl",
+			"args": [
+				"make",
+				"clean",
+			],
+			"problemMatcher": [],
+			"group": "none",
+		}
+	],
+}
