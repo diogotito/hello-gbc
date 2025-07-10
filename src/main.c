@@ -1,6 +1,7 @@
 #include <gb/gb.h>
 #include <gb/cgb.h>
 #include <gbdk/incbin.h>
+#include <gbdk/emu_debug.h>
 #include <stdint.h>
 #include "../res/ruins.h"
 #include "../res/dude-sheet.h"
@@ -41,11 +42,49 @@ struct my_metasprite {
     int frame;
     int x;
     int y;
-} dude = {0, 32, 32};
+};
+
+enum DudeState
+{
+    DUDE_WAITING,
+    DUDE_MOVING_RIGHT = J_RIGHT,
+    DUDE_MOVING_LEFT  = J_LEFT,
+    DUDE_MOVING_UP    = J_UP,
+    DUDE_MOVING_DOWN  = J_DOWN,
+} cur_state = DUDE_WAITING;
+
+int8_t dude_speed = 1;
+
+enum DudeState dude_handle_movement(struct my_metasprite *dude)
+{
+    // EMU_BREAKPOINT
+    switch (cur_state)
+    {
+    case DUDE_WAITING:
+        if (cur_joy_dx > 0) return DUDE_MOVING_RIGHT;
+        if (cur_joy_dx < 0) return DUDE_MOVING_LEFT;
+        if (cur_joy_dy < 0) return DUDE_MOVING_UP;
+        if (cur_joy_dy > 0) return DUDE_MOVING_DOWN;
+        return DUDE_WAITING;
+    case DUDE_MOVING_RIGHT:
+        dude->x += dude_speed;
+        return (dude->x % dude_sheet_WIDTH) ? DUDE_MOVING_RIGHT : DUDE_WAITING;
+    case DUDE_MOVING_LEFT:
+        dude->x -= dude_speed;
+        return (dude->x % dude_sheet_WIDTH) ? DUDE_MOVING_LEFT : DUDE_WAITING;
+    case DUDE_MOVING_UP:
+        dude->y -= dude_speed;
+        return (dude->y % dude_sheet_HEIGHT) ? DUDE_MOVING_UP : DUDE_WAITING;
+    case DUDE_MOVING_DOWN:
+        dude->y += dude_speed;
+        return (dude->y % dude_sheet_HEIGHT) ? DUDE_MOVING_DOWN : DUDE_WAITING;
+    }
+}
 
 void main(void)
 {
 	init_gfx();
+    static struct my_metasprite dude = { .frame = 0, .x = 32, .y = 32 };
 
     while(1) {
         // Input processing
@@ -56,8 +95,7 @@ void main(void)
         // Dude processing
         dude.frame += (sys_time % 20) == 0;  // Advance animation every 20 V-blanks
         dude.frame %= 2;                     // There are 2 frames in the animation
-        dude.x += cur_joy_dx;
-        dude.y += cur_joy_dy;
+        cur_state = dude_handle_movement(&dude);
 
         // Update dude OBJs in shadow OAM
         move_metasprite_ex(
