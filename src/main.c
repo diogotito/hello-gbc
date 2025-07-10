@@ -35,19 +35,34 @@ void init_gfx(void) {
 
 // State
 uint8_t cur_joypad;
-int8_t scroll_dx, scroll_dy;
+int8_t cur_joy_dx, cur_joy_dy;
+
+struct my_metasprite {
+    int frame;
+    int x;
+    int y;
+} dude = {0, 32, 32};
 
 void main(void)
 {
 	init_gfx();
 
-    // Loop forever
     while(1) {
-		// Game main loop processing goes here
+        // Input processing
         cur_joypad = joypad();
-        scroll_dx = ((cur_joypad & J_RIGHT) << 1) - (cur_joypad & J_LEFT);
-        scroll_dy = ((cur_joypad & J_DOWN) >> 2) - ((cur_joypad & J_UP) >> 1);
-        scroll_bkg(scroll_dx, scroll_dy);
+        cur_joy_dx = ( cur_joypad & J_RIGHT)      - ((cur_joypad & J_LEFT) >> 1);
+        cur_joy_dy = ((cur_joypad & J_DOWN) >> 3) - ((cur_joypad & J_UP)   >> 2);
+
+        // Dude processing
+        dude.frame += (sys_time % 20) == 0;  // Advance animation every 20 V-blanks
+        dude.frame %= 2;                     // There are 2 frames in the animation
+        dude.x += cur_joy_dx;
+        dude.y += cur_joy_dy;
+
+        // Update dude OBJs in shadow OAM
+        move_metasprite_ex(
+            dude_sheet_metasprites[dude.frame],
+            dude_sheet_TILE_ORIGIN, 0x00, 0, dude.x, dude.y);
 
 		// Done processing, yield CPU and wait for start of next frame
         vsync();
