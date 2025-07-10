@@ -10,6 +10,7 @@
         "stdint.h": "c",
         "gb.h": "c",
         "cgb.h": "c",
-        "ruins.h": "c"
+        "ruins.h": "c",
+        "metasprites.h": "c"
     }
 }

@@ -11,6 +11,7 @@
                 "_DEBUG",
                 "UNICODE",
                 "_UNICODE",
+                "__TARGET_gb",
                 "__sfr=",
                 "__PORT_sm83",
                 "__SDCC_sm83",

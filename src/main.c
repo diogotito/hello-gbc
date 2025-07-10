@@ -3,18 +3,17 @@
 #include <gbdk/incbin.h>
 #include <stdint.h>
 #include "../res/ruins.h"
+#include "../res/dude-sheet.h"
 
-// city tiles
-
-
-#define TILE_BYTES 16       // 16 bytes per background tile
 
 void init_gfx(void) {
     // Load background tile patterns
-    set_bkg_data(0, ruins_TILE_COUNT, ruins_tiles);
+    set_bkg_data(ruins_TILE_ORIGIN, ruins_TILE_COUNT, ruins_tiles);
+    set_sprite_data(dude_sheet_TILE_ORIGIN, dude_sheet_TILE_COUNT, dude_sheet_tiles);
 
     // Transfer color palettes
     set_bkg_palette(0, ruins_PALETTE_COUNT, ruins_palettes);
+    set_sprite_palette(0, dude_sheet_PALETTE_COUNT, dude_sheet_palettes);
     
     // Load background attributes and map
     VBK_REG = VBK_ATTRIBUTES;
@@ -24,8 +23,19 @@ void init_gfx(void) {
     
 	// Turn the background map on to make it visible
     SHOW_BKG;
+
+    // Show the dude
+    // set_sprite_tile(0, dude_sheet_TILE_ORIGIN);
+    // set_sprite_tile(1, dude_sheet_TILE_ORIGIN + 2);
+    move_metasprite_ex(dude_sheet_metasprites[0], dude_sheet_TILE_ORIGIN, 0x00, 0, 32, 32);
+    SPRITES_8x16;
+    SHOW_SPRITES;
 }
 
+
+// State
+uint8_t cur_joypad;
+int8_t scroll_dx, scroll_dy;
 
 void main(void)
 {
@@ -33,10 +43,11 @@ void main(void)
 
     // Loop forever
     while(1) {
-
-
 		// Game main loop processing goes here
-
+        cur_joypad = joypad();
+        scroll_dx = ((cur_joypad & J_RIGHT) << 1) - (cur_joypad & J_LEFT);
+        scroll_dy = ((cur_joypad & J_DOWN) >> 2) - ((cur_joypad & J_UP) >> 1);
+        scroll_bkg(scroll_dx, scroll_dy);
 
 		// Done processing, yield CPU and wait for start of next frame
         vsync();
