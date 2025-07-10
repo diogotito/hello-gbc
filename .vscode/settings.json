@@ -11,6 +11,7 @@
         "gb.h": "c",
         "cgb.h": "c",
         "ruins.h": "c",
-        "metasprites.h": "c"
+        "metasprites.h": "c",
+        "emu_debug.h": "c"
     }
 }

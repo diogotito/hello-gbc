@@ -15,8 +15,8 @@
 #define dude_sheet_PALETTE_COUNT 1
 #define dude_sheet_COLORS_PER_PALETTE 4
 #define dude_sheet_TOTAL_COLORS 4
-#define dude_sheet_PIVOT_X 8
-#define dude_sheet_PIVOT_Y 8
+#define dude_sheet_PIVOT_X 0
+#define dude_sheet_PIVOT_Y 0
 #define dude_sheet_PIVOT_W 16
 #define dude_sheet_PIVOT_H 16
 extern const metasprite_t* const dude_sheet_metasprites[2];

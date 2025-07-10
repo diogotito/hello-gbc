@@ -2,10 +2,24 @@
 #include <gb/cgb.h>
 #include <gbdk/incbin.h>
 #include <gbdk/emu_debug.h>
+#include <gbdk/metasprites.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include "../res/ruins.h"
 #include "../res/dude-sheet.h"
 
+const uint8_t ruins_TILE_PASSABILITY[] = {
+    // bits: down | up | left | right
+    0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111,
+    0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111,
+    0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111,
+    0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111,
+    0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111,
+    0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111,
+    0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111,
+    0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111,
+    0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111,
+};
 
 void init_gfx(void) {
     // Load background tile patterns
@@ -39,9 +53,10 @@ uint8_t cur_joypad;
 int8_t cur_joy_dx, cur_joy_dy;
 
 struct my_metasprite {
-    int frame;
-    int x;
-    int y;
+    uint8_t frame;
+    bool flipX;
+    uint8_t x;
+    uint8_t y;
 };
 
 enum DudeState
@@ -55,35 +70,60 @@ enum DudeState
 
 int8_t dude_speed = 1;
 
+enum DudeState start_moving_right(struct my_metasprite *dude) {
+    uint8_t x = dude->x >> 2;
+    return DUDE_MOVING_RIGHT;
+}
+
+enum DudeState start_moving_left(struct my_metasprite *dude) {
+    return DUDE_MOVING_LEFT;
+}
+
+enum DudeState start_moving_up(struct my_metasprite *dude) {
+    return DUDE_MOVING_UP;
+}
+
+enum DudeState start_moving_down(struct my_metasprite *dude) {
+    return DUDE_MOVING_DOWN;
+}
+
 enum DudeState dude_handle_movement(struct my_metasprite *dude)
 {
     switch (cur_state)
     {
     case DUDE_WAITING:
-        if (cur_joypad & J_RIGHT) goto R;
-        if (cur_joypad & J_LEFT)  goto L;
-        if (cur_joypad & J_UP)    goto U;
-        if (cur_joypad & J_DOWN)  goto D;
+        if (cur_joypad & J_RIGHT) return start_moving_right(dude);
+        if (cur_joypad & J_LEFT)  return start_moving_left(dude);
+        if (cur_joypad & J_UP)    return start_moving_up(dude);
+        if (cur_joypad & J_DOWN)  return start_moving_down(dude);
+        dude->frame++;
         return DUDE_WAITING;
     case DUDE_MOVING_RIGHT:
-    R:  dude->x += dude_speed;
+        dude->x += dude_speed;
+        dude->frame += 4;
+        dude->flipX = false;
         return (dude->x % dude_sheet_WIDTH) ? DUDE_MOVING_RIGHT : DUDE_WAITING;
     case DUDE_MOVING_LEFT:
-    L:  dude->x -= dude_speed;
+        dude->x -= dude_speed;
+        dude->frame += 4;
+        dude->flipX = true;
         return (dude->x % dude_sheet_WIDTH) ? DUDE_MOVING_LEFT : DUDE_WAITING;
     case DUDE_MOVING_UP:
-    U:  dude->y -= dude_speed;
+        dude->y -= dude_speed;
+        dude->frame += 4;
         return (dude->y % dude_sheet_HEIGHT) ? DUDE_MOVING_UP : DUDE_WAITING;
     case DUDE_MOVING_DOWN:
-    D:  dude->y += dude_speed;
+        dude->y += dude_speed;
+        dude->frame += 4;
         return (dude->y % dude_sheet_HEIGHT) ? DUDE_MOVING_DOWN : DUDE_WAITING;
     }
+    return cur_state;
 }
 
 void main(void)
 {
 	init_gfx();
-    static struct my_metasprite dude = { .frame = 0, .x = 32, .y = 32 };
+    static struct my_metasprite dude = { .frame = 0, .flipX = false, .x = 32, .y = 32 };
 
     while(1) {
         // Input processing
@@ -92,16 +132,22 @@ void main(void)
         cur_joy_dy = ((cur_joypad & J_DOWN) >> 3) - ((cur_joypad & J_UP)   >> 2);
 
         // Dude processing
-        dude.frame += (sys_time % 20) == 0;  // Advance animation every 20 V-blanks
-        dude.frame %= 2;                     // There are 2 frames in the animation
         cur_state = dude_handle_movement(&dude);
 
         // Update dude OBJs in shadow OAM
-        move_metasprite_ex(
-            dude_sheet_metasprites[dude.frame],
-            dude_sheet_TILE_ORIGIN, 0x00, 0, dude.x, dude.y);
+        
+        if (dude.flipX)
+        {
+            move_metasprite_flipx(
+                dude_sheet_metasprites[(dude.frame & 0x20) >> 5],
+                dude_sheet_TILE_ORIGIN, 0x00, 0, dude.x + dude_sheet_WIDTH, dude.y);
+        } else {
+            move_metasprite_ex(
+                dude_sheet_metasprites[(dude.frame & 0x20) >> 5],
+                dude_sheet_TILE_ORIGIN, 0x00, 0, dude.x, dude.y);
+        }
 
-		// Done processing, yield CPU and wait for start of next frame
+        // Done processing, yield CPU and wait for start of next frame
         vsync();
     }
 }
