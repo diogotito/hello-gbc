@@ -1,7 +1,7 @@
 hello-gbc
 =========
 
-A Game Boy Color TRPG.
+An experiment with GBDK for a TRPG concept for the GB Compo 2025. We don't have a name for this yet.
 
 Build Instructions
 -------------------
@@ -46,3 +46,7 @@ if you setup your `GBDK_HOME` enviornment variable correctly in your system.
 [^1]: you need to have both make and GBDK installed in your default WSL distro
 and a `$GBDK_HOME` enviornment variable with the path where you installed GBDK
 in the shell invoked by make.
+
+Footage
+-------
+https://github.com/user-attachments/assets/a8d67034-f2ca-4366-a0cd-7279e450dfbd
