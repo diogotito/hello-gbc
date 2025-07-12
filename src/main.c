@@ -5,20 +5,26 @@
 #include <gbdk/metasprites.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include "../res/ruins.h"
 #include "../res/dude-sheet.h"
 
 const uint8_t ruins_TILE_PASSABILITY[] = {
     // bits: down | up | left | right
-    0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111,
-    0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111,
-    0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111,
-    0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111,
-    0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111,
-    0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111,
-    0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111,
-    0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111,
-    0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111,
+    0,                  0,      0,      0,      0,      0,      0,      0,      0,      0,      0,         0,
+    //          [0]     [1]     [2]    [3]      [4]     [5]     [6]     [7]     [8]     [9]
+    //        ,---------------------------------------------------------------------------------------.
+    0, /* [0] | */ 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111, /* | */ 0,
+    0, /* [1] | */ 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111, /* | */ 0,
+    0, /* [2] | */ 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111, /* | */ 0,
+    0, /* [3] | */ 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111, /* | */ 0,
+    0, /* [4] | */ 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111, /* | */ 0,
+    0, /* [5] | */ 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, /* | */ 0,
+    0, /* [6] | */ 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, /* | */ 0,
+    0, /* [7] | */ 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, /* | */ 0,
+    0, /* [8] | */ 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, /* | */ 0,
+    //        `--------------------------------------------------------------------------------------´
+    0,                  0,      0,      0,      0,      0,      0,      0,      0,      0,      0,         0,
 };
 
 void init_gfx(void) {
@@ -70,21 +76,20 @@ enum DudeState
 
 int8_t dude_speed = 1;
 
-enum DudeState start_moving_right(struct my_metasprite *dude) {
-    uint8_t x = dude->x >> 2;
-    return DUDE_MOVING_RIGHT;
-}
+enum DudeState start_moving_towards(
+    struct my_metasprite *dude,
+    enum DudeState next_state, int8_t dx, int8_t dy)
+{
+    uint8_t x = dude->x / 16;
+    uint8_t y = dude->y / 16;
+    // printf("dude@(%2d,%2d)", x, y);
 
-enum DudeState start_moving_left(struct my_metasprite *dude) {
-    return DUDE_MOVING_LEFT;
-}
+    // Check if right tile is passable
+    uint8_t check_x = (x + 1) + dx;
+    uint8_t check_y = (y + 1) + dy;
+    bool canMove = ruins_TILE_PASSABILITY[12 * check_y + check_x] & next_state;
 
-enum DudeState start_moving_up(struct my_metasprite *dude) {
-    return DUDE_MOVING_UP;
-}
-
-enum DudeState start_moving_down(struct my_metasprite *dude) {
-    return DUDE_MOVING_DOWN;
+    return canMove ? next_state : DUDE_WAITING;
 }
 
 enum DudeState dude_handle_movement(struct my_metasprite *dude)
@@ -92,10 +97,10 @@ enum DudeState dude_handle_movement(struct my_metasprite *dude)
     switch (cur_state)
     {
     case DUDE_WAITING:
-        if (cur_joypad & J_RIGHT) return start_moving_right(dude);
-        if (cur_joypad & J_LEFT)  return start_moving_left(dude);
-        if (cur_joypad & J_UP)    return start_moving_up(dude);
-        if (cur_joypad & J_DOWN)  return start_moving_down(dude);
+        if (cur_joypad & J_RIGHT) return start_moving_towards(dude, J_RIGHT,  1,  0);
+        if (cur_joypad & J_LEFT)  return start_moving_towards(dude, J_LEFT,  -1,  0);
+        if (cur_joypad & J_UP)    return start_moving_towards(dude, J_UP,     0, -1);
+        if (cur_joypad & J_DOWN)  return start_moving_towards(dude, J_DOWN,   0,  1);
         dude->frame++;
         return DUDE_WAITING;
     case DUDE_MOVING_RIGHT:
@@ -123,7 +128,7 @@ enum DudeState dude_handle_movement(struct my_metasprite *dude)
 void main(void)
 {
 	init_gfx();
-    static struct my_metasprite dude = { .frame = 0, .flipX = false, .x = 32, .y = 32 };
+    static struct my_metasprite dude = { .frame = 0, .flipX = false, .x = 32, .y = 16 };
 
     while(1) {
         // Input processing
@@ -140,11 +145,11 @@ void main(void)
         {
             move_metasprite_flipx(
                 dude_sheet_metasprites[(dude.frame & 0x20) >> 5],
-                dude_sheet_TILE_ORIGIN, 0x00, 0, dude.x + dude_sheet_WIDTH, dude.y);
+                dude_sheet_TILE_ORIGIN, 0x00, 0, dude.x + dude_sheet_WIDTH + 8, dude.y + 16);
         } else {
             move_metasprite_ex(
                 dude_sheet_metasprites[(dude.frame & 0x20) >> 5],
-                dude_sheet_TILE_ORIGIN, 0x00, 0, dude.x, dude.y);
+                dude_sheet_TILE_ORIGIN, 0x00, 0, dude.x + 8, dude.y + 16);
         }
 
         // Done processing, yield CPU and wait for start of next frame
