@@ -11,10 +11,10 @@
 #define ruins_TILE_H 8
 #define ruins_WIDTH 160
 #define ruins_HEIGHT 144
-#define ruins_TILE_COUNT 57
-#define ruins_PALETTE_COUNT 3
+#define ruins_TILE_COUNT 111
+#define ruins_PALETTE_COUNT 5
 #define ruins_COLORS_PER_PALETTE 4
-#define ruins_TOTAL_COLORS 12
+#define ruins_TOTAL_COLORS 20
 #define ruins_MAP_ATTRIBUTES ruins_map_attributes
 #define ruins_MAP_ATTRIBUTES_WIDTH 20
 #define ruins_MAP_ATTRIBUTES_HEIGHT 18
@@ -25,7 +25,7 @@ extern const unsigned char ruins_map_attributes[360];
 
 BANKREF_EXTERN(ruins)
 
-extern const palette_color_t ruins_palettes[12];
-extern const uint8_t ruins_tiles[912];
+extern const palette_color_t ruins_palettes[20];
+extern const uint8_t ruins_tiles[1776];
 
 #endif
