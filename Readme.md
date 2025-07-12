@@ -1,10 +1,8 @@
-hello-gbc
-=========
+# hello-gbc
 
 An experiment with GBDK for a TRPG concept for the GB Compo 2025. We don't have a name for this yet.
 
-Build Instructions
--------------------
+## Build Instructions
 
 ### Prerequisites
 
@@ -12,13 +10,11 @@ Build Instructions
 - a GBDK release extracted somewhere
 - a `GBDK_HOME` enviornment variable with the path where you extracted GBDK
 
-### General steps
+### Building `obj/Example.gb`
 
-```sh
-make
-```
+Just invoke `make` or launch `build_and_run.bat` depending on your system.
 
-### After changing the graphics in `res/`
+### When changing the graphics in `res/`
 
 ```sh
 cd res
@@ -29,8 +25,7 @@ cd ..
 make
 ```
 
-Development
------------
+## Development
 
 can be done on Linux and Mac with GBDK and GNU Make installed.
 
@@ -47,6 +42,6 @@ if you setup your `GBDK_HOME` enviornment variable correctly in your system.
 and a `$GBDK_HOME` enviornment variable with the path where you installed GBDK
 in the shell invoked by make.
 
-Footage
--------
-https://github.com/user-attachments/assets/a8d67034-f2ca-4366-a0cd-7279e450dfbd
+## Footage
+
+<https://github.com/user-attachments/assets/a8d67034-f2ca-4366-a0cd-7279e450dfbd>

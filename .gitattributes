@@ -1,0 +1,2 @@
+# Preserve CRLF in Windows Batch files
+*.bat text eol=crlf
