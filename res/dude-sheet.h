@@ -8,10 +8,10 @@
 
 #define dude_sheet_TILE_ORIGIN 80
 #define dude_sheet_TILE_W 8
-#define dude_sheet_TILE_H 16
+#define dude_sheet_TILE_H 8
 #define dude_sheet_WIDTH 16
 #define dude_sheet_HEIGHT 16
-#define dude_sheet_TILE_COUNT 8
+#define dude_sheet_TILE_COUNT 12
 #define dude_sheet_PALETTE_COUNT 1
 #define dude_sheet_COLORS_PER_PALETTE 4
 #define dude_sheet_TOTAL_COLORS 4
@@ -19,11 +19,11 @@
 #define dude_sheet_PIVOT_Y 0
 #define dude_sheet_PIVOT_W 16
 #define dude_sheet_PIVOT_H 16
-extern const metasprite_t* const dude_sheet_metasprites[2];
+extern const metasprite_t* const dude_sheet_metasprites[4];
 
 BANKREF_EXTERN(dude_sheet)
 
 extern const palette_color_t dude_sheet_palettes[4];
-extern const uint8_t dude_sheet_tiles[128];
+extern const uint8_t dude_sheet_tiles[192];
 
 #endif

@@ -19,7 +19,7 @@ const uint8_t ruins_TILE_PASSABILITY[] = {
     0,   /* [1] | */ 0b1111, 0b1111, 0b0000, 0b0000, 0b0000, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111, /* | */   0,
     0,   /* [2] | */ 0b1111, 0b1111, 0b0000, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, /* | */   0,
     0,   /* [3] | */ 0b1111, 0b1111, 0b0000, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, /* | */   0,
-    0,   /* [4] | */ 0b1111, 0b1111, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, /* | */   0,
+    0,   /* [4] | */ 0b1111, 0b1111, 0b0000, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, /* | */   0,
     0,   /* [5] | */ 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, /* | */   0,
     0,   /* [6] | */ 0b0000, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1100, 0b1111, /* | */   0,
     0,   /* [7] | */ 0b0000, 0b0000, 0b0000, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, 0b1111, /* | */   0,
@@ -38,7 +38,7 @@ void init_gfx(void) {
     // Transfer color palettes
     set_bkg_palette(0, ruins_PALETTE_COUNT, ruins_palettes);
     set_sprite_palette(0, dude_sheet_PALETTE_COUNT, dude_sheet_palettes);
-    static const palette_color_t black_palette[] = {RGB8(  230,  230,  230), RGB8(80,80,80), RGB8(13, 16, 8), RGB8( 16, 8, 8)};
+    static const palette_color_t black_palette[] = {RGB8(  0,  0,  0), RGB8(159,159,159), RGB8(255, 0, 0), RGB8( 0, 0, 0)};
     set_sprite_palette(1, 1, black_palette);
     
     // Load background attributes and map
@@ -54,7 +54,7 @@ void init_gfx(void) {
     // set_sprite_tile(0, dude_sheet_TILE_ORIGIN);
     // set_sprite_tile(1, dude_sheet_TILE_ORIGIN + 2);
     move_metasprite_ex(dude_sheet_metasprites[0], dude_sheet_TILE_ORIGIN, 0x00, 0, 32, 32);
-    SPRITES_8x16;
+    SPRITES_8x8;
     SHOW_SPRITES;
 }
 
@@ -106,11 +106,32 @@ enum DudeState start_moving_towards(
     if (canMove) {
         return next_state;
     } else {
-        dude->blinking_countdown = 18;
+        dude->blinking_countdown = 8;
         return DUDE_BLINKING;
     }
 }
 
+enum DudeState finish_moving_towards(
+    struct my_metasprite *dude,
+    enum DudeState from_state, int8_t dx, int8_t dy)
+{
+    // Get dude position in passability map
+    uint8_t x = dude->x / 16;
+    uint8_t y = dude->y / 16;
+
+    // Check if we could go back to the tile we came from
+    uint8_t check_x = (x + 1) - dx;
+    uint8_t check_y = (y + 1) - dy;
+    bool couldMove = ruins_TILE_PASSABILITY[12 * check_y + check_x] & from_state;
+
+    // If not, then we might have jumped from a cliff or sth. Blink accordingly.
+    if (couldMove) {
+        return DUDE_WAITING;
+    } else {
+        dude->blinking_countdown = 4;
+        return DUDE_BLINKING;
+    }
+}
 
 enum DudeState dude_handle_movement(struct my_metasprite *dude)
 {
@@ -128,22 +149,26 @@ enum DudeState dude_handle_movement(struct my_metasprite *dude)
     case DUDE_MOVING_RIGHT:
         dude->x += dude_speed;
         dude->frame += 4;
-        return (dude->x % dude_sheet_WIDTH) ? DUDE_MOVING_RIGHT : DUDE_WAITING;
+        return (dude->x % dude_sheet_WIDTH) ? DUDE_MOVING_RIGHT
+                                            : finish_moving_towards(dude, J_RIGHT, 1, 0);
     case DUDE_MOVING_LEFT:
         dude->x -= dude_speed;
         dude->frame += 4;
-        return (dude->x % dude_sheet_WIDTH) ? DUDE_MOVING_LEFT : DUDE_WAITING;
+        return (dude->x % dude_sheet_WIDTH) ? DUDE_MOVING_LEFT
+                                            : finish_moving_towards(dude, J_LEFT, -1, 0);
     case DUDE_MOVING_UP:
         dude->y -= dude_speed;
         dude->frame += 4;
-        return (dude->y % dude_sheet_HEIGHT) ? DUDE_MOVING_UP : DUDE_WAITING;
+        return (dude->y % dude_sheet_HEIGHT) ? DUDE_MOVING_UP
+                                            : finish_moving_towards(dude, J_UP, 0, -1);
     case DUDE_MOVING_DOWN:
         dude->y += dude_speed;
         dude->frame += 4;
-        return (dude->y % dude_sheet_HEIGHT) ? DUDE_MOVING_DOWN : DUDE_WAITING;
+        return (dude->y % dude_sheet_HEIGHT) ? DUDE_MOVING_DOWN
+                                            : finish_moving_towards(dude, J_DOWN, 0, 1);
     case DUDE_BLINKING:
         --dude->blinking_countdown;
-        uint8_t palette = dude->blinking_countdown % 6 > 2;
+        uint8_t palette = dude->blinking_countdown % 4 > 1;
         dude->props = dude->props & 0b11111000 | palette;
         return dude->blinking_countdown ? DUDE_BLINKING : DUDE_WAITING;
     }
