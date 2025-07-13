@@ -29,6 +29,7 @@ const uint8_t ruins_TILE_PASSABILITY[] = {
     0,                    0,      0,      0,      0,      0,      0,      0,      0,      0,      0,           0,
 };
 
+
 void init_gfx(void) {
     // Load background tile patterns
     set_bkg_data(ruins_TILE_ORIGIN, ruins_TILE_COUNT, ruins_tiles);
@@ -37,6 +38,8 @@ void init_gfx(void) {
     // Transfer color palettes
     set_bkg_palette(0, ruins_PALETTE_COUNT, ruins_palettes);
     set_sprite_palette(0, dude_sheet_PALETTE_COUNT, dude_sheet_palettes);
+    static const palette_color_t black_palette[] = {RGB8(  230,  230,  230), RGB8(80,80,80), RGB8(13, 16, 8), RGB8( 16, 8, 8)};
+    set_sprite_palette(1, 1, black_palette);
     
     // Load background attributes and map
     VBK_REG = VBK_ATTRIBUTES;
@@ -62,7 +65,9 @@ int8_t cur_joy_dx, cur_joy_dy;
 
 struct my_metasprite {
     uint8_t frame;
+    uint8_t blinking_countdown;
     bool flipX;
+    uint8_t props;
     uint8_t x;
     uint8_t y;
 };
@@ -74,28 +79,43 @@ enum DudeState
     DUDE_MOVING_LEFT  = J_LEFT,
     DUDE_MOVING_UP    = J_UP,
     DUDE_MOVING_DOWN  = J_DOWN,
+    DUDE_BLINKING,
 } cur_state = DUDE_WAITING;
-
-int8_t dude_speed = 1;
 
 enum DudeState start_moving_towards(
     struct my_metasprite *dude,
     enum DudeState next_state, int8_t dx, int8_t dy)
 {
+    // Pick dude flipX based on current and next state
+    if (next_state == DUDE_MOVING_LEFT) {
+        dude->flipX = true;
+    } else if (next_state == DUDE_MOVING_RIGHT) {
+        dude->flipX = false;
+    }
+    
+    // Get dude position in passability map
     uint8_t x = dude->x / 16;
     uint8_t y = dude->y / 16;
-    // printf("dude@(%2d,%2d)", x, y);
 
-    // Check if right tile is passable
+    // Check if next tile is passable
     uint8_t check_x = (x + 1) + dx;
     uint8_t check_y = (y + 1) + dy;
     bool canMove = ruins_TILE_PASSABILITY[12 * check_y + check_x] & next_state;
 
-    return canMove ? next_state : DUDE_WAITING;
+    // Transition state accordingly
+    if (canMove) {
+        return next_state;
+    } else {
+        dude->blinking_countdown = 18;
+        return DUDE_BLINKING;
+    }
 }
+
 
 enum DudeState dude_handle_movement(struct my_metasprite *dude)
 {
+    static int8_t dude_speed = 1;
+
     switch (cur_state)
     {
     case DUDE_WAITING:
@@ -108,12 +128,10 @@ enum DudeState dude_handle_movement(struct my_metasprite *dude)
     case DUDE_MOVING_RIGHT:
         dude->x += dude_speed;
         dude->frame += 4;
-        dude->flipX = false;
         return (dude->x % dude_sheet_WIDTH) ? DUDE_MOVING_RIGHT : DUDE_WAITING;
     case DUDE_MOVING_LEFT:
         dude->x -= dude_speed;
         dude->frame += 4;
-        dude->flipX = true;
         return (dude->x % dude_sheet_WIDTH) ? DUDE_MOVING_LEFT : DUDE_WAITING;
     case DUDE_MOVING_UP:
         dude->y -= dude_speed;
@@ -123,6 +141,11 @@ enum DudeState dude_handle_movement(struct my_metasprite *dude)
         dude->y += dude_speed;
         dude->frame += 4;
         return (dude->y % dude_sheet_HEIGHT) ? DUDE_MOVING_DOWN : DUDE_WAITING;
+    case DUDE_BLINKING:
+        --dude->blinking_countdown;
+        uint8_t palette = dude->blinking_countdown % 6 > 2;
+        dude->props = dude->props & 0b11111000 | palette;
+        return dude->blinking_countdown ? DUDE_BLINKING : DUDE_WAITING;
     }
     return cur_state;
 }
@@ -147,11 +170,11 @@ void main(void)
         {
             move_metasprite_flipx(
                 dude_sheet_metasprites[(dude.frame & 0x20) >> 5],
-                dude_sheet_TILE_ORIGIN, 0x00, 0, dude.x + dude_sheet_WIDTH + 8, dude.y + 16);
+                dude_sheet_TILE_ORIGIN, dude.props, 0, dude.x + dude_sheet_WIDTH + 8, dude.y + 16);
         } else {
             move_metasprite_ex(
                 dude_sheet_metasprites[(dude.frame & 0x20) >> 5],
-                dude_sheet_TILE_ORIGIN, 0x00, 0, dude.x + 8, dude.y + 16);
+                dude_sheet_TILE_ORIGIN, dude.props, 0, dude.x + 8, dude.y + 16);
         }
 
         // Done processing, yield CPU and wait for start of next frame

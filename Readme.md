@@ -46,4 +46,4 @@ For now, these have to be run before doing `make` on the repository root.
 
 ## Footage
 
-https://github.com/user-attachments/assets/32bf4a4d-4808-43a7-8ff6-b9f8a664eb14
+<https://github.com/user-attachments/assets/c4220f88-1ccf-42b1-a6c5-2f09c5fa270a>
