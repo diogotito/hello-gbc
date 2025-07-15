@@ -15,5 +15,6 @@
         "emu_debug.h": "c",
         "string.h": "c",
         "dude-sheet.h": "c"
-    }
+    },
+    "problems.autoReveal": false
 }

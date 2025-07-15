@@ -51,8 +51,6 @@ void init_gfx(void) {
     SHOW_BKG;
 
     // Show the dude
-    // set_sprite_tile(0, dude_sheet_TILE_ORIGIN);
-    // set_sprite_tile(1, dude_sheet_TILE_ORIGIN + 2);
     move_metasprite_ex(dude_sheet_metasprites[0], dude_sheet_TILE_ORIGIN, 0x00, 0, 32, 32);
     SPRITES_8x8;
     SHOW_SPRITES;
