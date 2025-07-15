@@ -43,8 +43,7 @@ void main(void)
 
     while(1) {
         input_refresh();
-        // dude_update(&dude);
-        dude.cur_state = dude_handle_movement(&dude);
+        dude_update(&dude);
         dude_draw(&dude);
         vsync();
     }

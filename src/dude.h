@@ -26,6 +26,8 @@ void dude_init_gfx();
 void dude_update(dude_spr *dude);
 void dude_draw(dude_spr *dude);
 
+DudeState dude_handle_movement(dude_spr *dude);
+
 DudeState start_moving_towards(
     dude_spr *dude,
     DudeState next_state, int8_t dx, int8_t dy);
@@ -33,7 +35,5 @@ DudeState start_moving_towards(
 DudeState finish_moving_towards(
     dude_spr *dude,
     DudeState from_state, int8_t dx, int8_t dy);
-
-DudeState dude_handle_movement(dude_spr *dude);
 
 #endif
