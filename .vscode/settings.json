@@ -14,7 +14,10 @@
         "metasprites.h": "c",
         "emu_debug.h": "c",
         "string.h": "c",
-        "dude-sheet.h": "c"
+        "dude-sheet.h": "c",
+        "my_sprites.h": "c",
+        "stdbool.h": "c"
     },
-    "problems.autoReveal": false
+    "problems.autoReveal": false,
+    "debug.terminal.clearBeforeReusing": true
 }
