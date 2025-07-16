@@ -8,6 +8,7 @@
 #include "../res/ruins.h"
 #include "input.h"
 #include "dude.h"
+#include "ui.h"
 
 
 void init_gfx(void) {
@@ -28,7 +29,8 @@ void init_gfx(void) {
 	// Turn the background map on to make it visible
     SHOW_BKG;
 
-    dude_init_gfx();
+    dude_load_gfx();
+    ui_load_gfx();
     SPRITES_8x8;
     SHOW_SPRITES;
 }

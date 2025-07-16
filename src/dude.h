@@ -1,10 +1,8 @@
 #ifndef __DUDE_H
 #define __DUDE_H
 
-#include <gb/gb.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "../res/dude-sheet.h"
 #include "my_sprites.h"
 
 typedef enum DudeState
@@ -22,7 +20,7 @@ typedef struct dude_spr {
     DudeState cur_state;
 } dude_spr;
 
-void dude_init_gfx();
+void dude_load_gfx();
 void dude_update(dude_spr *dude);
 void dude_draw(dude_spr *dude);
 

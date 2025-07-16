@@ -1,3 +1,5 @@
+#include <gb/gb.h>
+#include "../res/dude-sheet.h"
 #include "dude.h"
 #include "input.h"
 
@@ -21,10 +23,9 @@ static const uint8_t ruins_TILE_PASSABILITY[] = {
     0,                    0,      0,      0,      0,      0,      0,      0,      0,      0,      0,           0,
 };
 
-void dude_init_gfx() {
+void dude_load_gfx() {
     set_sprite_data(dude_sheet_TILE_ORIGIN, dude_sheet_TILE_COUNT, dude_sheet_tiles);
     set_sprite_palette(0, dude_sheet_PALETTE_COUNT, dude_sheet_palettes);
-    move_metasprite_ex(dude_sheet_metasprites[0], dude_sheet_TILE_ORIGIN, 0x00, 0, 32, 32);
 }
 
 void dude_update(dude_spr *dude)

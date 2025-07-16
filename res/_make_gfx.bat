@@ -6,9 +6,13 @@ for /f %%a in ('echo prompt $E^| cmd') do set "ESC=%%a"
 
 REM NOTE TO SELF: Maybe -keep_palette_order
 
+@echo %ESC%[32m=== UI ===
+png2asset frames.png -map -use_map_attributes -tile_origin 192 -tiles_only
+
 @echo %ESC%[32m=== MAPS ===
 set "MAP_ARGS=-map -use_map_attributes"
 png2asset ruins.png %MAP_ARGS% -tile_origin 0
+
 
 @echo %ESC%[34m=== OBJS ===
 set "SPRITE_ARGS=-spr8x8 -px 0 -py 0"

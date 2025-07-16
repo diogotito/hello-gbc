@@ -16,8 +16,11 @@
         "string.h": "c",
         "dude-sheet.h": "c",
         "my_sprites.h": "c",
-        "stdbool.h": "c"
+        "stdbool.h": "c",
+        "gbdk-lib.h": "c",
+        "provides.h": "c"
     },
     "problems.autoReveal": false,
-    "debug.terminal.clearBeforeReusing": true
+    "debug.terminal.clearBeforeReusing": true,
+    "C_Cpp.errorSquiggles": "disabled"
 }
