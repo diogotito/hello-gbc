@@ -17,8 +17,6 @@ void init_gfx(void) {
 
     // Transfer color palettes
     set_bkg_palette(0, ruins_PALETTE_COUNT, ruins_palettes);
-    static const palette_color_t black_palette[] = {RGB8(  0,  0,  0), RGB8(159,159,159), RGB8(255, 0, 0), RGB8( 0, 0, 0)};
-    set_sprite_palette(1, 1, black_palette);
     
     // Load background attributes and map
     VBK_REG = VBK_ATTRIBUTES;
@@ -30,9 +28,13 @@ void init_gfx(void) {
     SHOW_BKG;
 
     dude_load_gfx();
-    ui_load_gfx();
+    static const palette_color_t black_palette[] = {RGB8(  0,  0,  0), RGB8(159,159,159), RGB8(255, 0, 0), RGB8( 0, 0, 0)};
+    set_sprite_palette(1, 1, black_palette);
     SPRITES_8x8;
     SHOW_SPRITES;
+
+    ui_load_gfx();
+    ui_show_window();
 }
 
 void main(void)

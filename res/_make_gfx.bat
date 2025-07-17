@@ -4,17 +4,21 @@ for /f %%a in ('echo prompt $E^| cmd') do set "ESC=%%a"
 
 @set "PATH=%GBDK_HOME%\bin;%PATH%"
 
-REM NOTE TO SELF: Maybe -keep_palette_order
 
-@echo %ESC%[32m=== UI ===
-png2asset frames.png -map -use_map_attributes -tile_origin 192 -tiles_only
+@echo. & echo %ESC%[31m=== UI ^& MISC TILESETS ===
 
-@echo %ESC%[32m=== MAPS ===
+set "TILESET_ARGS=-map -use_map_attributes"
+png2asset frames.png %TILESET_ARGS% -tile_origin 192 -tiles_only -keep_palette_order
+
+
+@echo. & echo %ESC%[32m=== MAPS ===
+
 set "MAP_ARGS=-map -use_map_attributes"
-png2asset ruins.png %MAP_ARGS% -tile_origin 0
+png2asset ruins.png %MAP_ARGS% -tile_origin 0 -max_palettes 6
 
 
-@echo %ESC%[34m=== OBJS ===
+@echo. & echo %ESC%[34m=== OBJS ===
+
 set "SPRITE_ARGS=-spr8x8 -px 0 -py 0"
 png2asset dude-sheet.png %SPRITE_ARGS% -tile_origin 80 -sw 16 -sh 16
 
