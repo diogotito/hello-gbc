@@ -21,6 +21,8 @@ void init_gfx(void) {
     // Load background attributes and map
     VBK_REG = VBK_ATTRIBUTES;
     set_bkg_tiles(0, 0, ruins_MAP_ATTRIBUTES_WIDTH, ruins_MAP_ATTRIBUTES_HEIGHT, ruins_map_attributes);
+    set_bkg_tile_xy(6, 1, get_bkg_tile_xy(6, 1) | S_PRIORITY); // Make dude appear behind reservoir
+    set_bkg_tile_xy(7, 1, get_bkg_tile_xy(6, 1) | S_PRIORITY); // which exist on these 2 positions on the map
     VBK_REG = VBK_TILES;
     set_bkg_tiles(0, 0, ruins_MAP_ATTRIBUTES_WIDTH, ruins_MAP_ATTRIBUTES_HEIGHT, ruins_map);
     
