@@ -104,11 +104,6 @@ void ui_hide_window()
     ui_position = UI_HIDDEN;
 }
 
-void ui_put_text(uint8_t x, uint8_t y, uint8_t w, char* text)
-{
-    set_win_tiles(x, y, w, 1, text);
-}
-
 void draw_panel(uint8_t x, uint8_t y, uint8_t width, uint8_t height)
 {
     // Flip some tiles and switch palette for the panel body

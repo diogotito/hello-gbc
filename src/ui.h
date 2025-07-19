@@ -17,6 +17,9 @@ void ui_load_gfx(void);
 void ui_show_window_top(void);
 void ui_show_window_bottom(void);
 void ui_draw_panel(uint8_t lines);
+
 void ui_put_text(uint8_t x, uint8_t y, uint8_t w, char *text);
+
+#define ui_put_text(x, y, string) set_win_tiles((uint8_t)(x), (uint8_t)(y), sizeof(string) - 1, 1, string);
 
 #endif
