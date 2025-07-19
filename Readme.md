@@ -1,4 +1,7 @@
+
 # hello-gbc
+
+<img src="res/art/accidental_transparency.gif" width="320" height="64" alt="&quot;HELLO, WORLD!&quot" align="right">
 
 An experiment with GBDK for a TRPG concept for the GB Compo 2025. We don't have a name for this yet.
 
@@ -37,8 +40,10 @@ be linked with the rest of the ROM:
 
 ```sh
 cd res
+png2asset ui_tiles.png -map -tile_origin 13 -tiles_only -keep_palette_order -keep_duplicate_tiles
 png2asset ruins.png -map -tile_origin 0 -use_map_attributes
 png2asset dude-sheet.png -tile_origin 80 -sw 16 -sh 16 -px 0 -py 0
+cd ..
 make
 ```
 

@@ -34,7 +34,9 @@ void init_gfx(void) {
     SHOW_SPRITES;
 
     ui_load_gfx();
-    ui_show_window();
+    ui_draw_panel(2);
+    ui_put_text(2, 1, sizeof("\"HELLO, WORLD!\""), "\"HELLO, WORLD!?\"");
+    ui_show_window_top();
 }
 
 void main(void)

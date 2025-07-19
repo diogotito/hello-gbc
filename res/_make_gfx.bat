@@ -7,8 +7,8 @@ for /f %%a in ('echo prompt $E^| cmd') do set "ESC=%%a"
 
 @echo. & echo %ESC%[31m=== UI ^& MISC TILESETS ===
 
-set "TILESET_ARGS=-map -use_map_attributes"
-png2asset frames.png %TILESET_ARGS% -tile_origin 192 -tiles_only -keep_palette_order
+set "TILESET_ARGS=-map"
+png2asset ui_tiles.png %TILESET_ARGS% -tile_origin 13 -tiles_only -keep_palette_order -keep_duplicate_tiles
 
 
 @echo. & echo %ESC%[32m=== MAPS ===
