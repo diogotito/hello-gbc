@@ -49,8 +49,16 @@ void main(void)
 
     while(1) {
         input_refresh();
+        
         dude_update(&dude);
         dude_draw(&dude);
+
+        if (dude.spr.y > 88 && ui_position != UI_TOP) {
+            ui_show_window_top();
+        } else if (dude.spr.y < 64 && ui_position != UI_BOTTOM) {
+            ui_show_window_bottom();
+        }
+
         vsync();
     }
 }

@@ -10,27 +10,12 @@
 #define ui_tiles_vertical_tile   (ui_tiles_TILE_ORIGIN + 3)
 #define ui_tiles_fill_tile       (ui_tiles_TILE_ORIGIN + 4)
 
-void draw_panel(uint8_t x, uint8_t y, uint8_t width, uint8_t height);
+// Keep track of current window height,
+// to disable the WIN layer at the right scanline when the UI is set up to be
+// shown at the top of the screen.
+uint8_t current_window_height = 8;
 
-void ui_load_gfx(void)
-{
-    // Switch to CGB's VRAM Bank 1 to load UI tile data separate from level
-    // and sprite tiles, and initialize the whole window attribute map while we
-    // are at it.
-    VBK_REG = VBK_BANK_1;
-
-    // Window decorations, UI elements, font and symbols go to to indices 0-127
-    set_win_data(ui_tiles_TILE_ORIGIN, ui_tiles_TILE_COUNT, ui_tiles_tiles);
-
-    // Load the 2 UI palettes to CRAM
-    set_bkg_palette(UI_PALETTE_INDEX, ui_tiles_PALETTE_COUNT, ui_tiles_palettes);
-
-    // Fill window attribute map with priority (bit 7) so that OBJs don't invade
-    // and use VRAM Bank 1 and the first UI palette for all tiles (bit 3).
-    fill_win_rect(0, 0, 32, 32, S_PRIORITY | S_BANK | UI_PALETTE_INDEX);
-
-    VBK_REG = VBK_BANK_0;
-}
+enum ui_win_pos ui_position = UI_TOP;
 
 void lyc_isr_c(void) INTERRUPT CRITICAL PRESERVES_REGS(b, c, d, e, h, l)
 {
@@ -55,35 +40,72 @@ void lyc_isr(void) INTERRUPT CRITICAL NAKED PRESERVES_REGS(b, c, d, e, h, l)
 
 void vbl_isr(void)
 {
-    SHOW_WIN;
+    if (ui_position != UI_HIDDEN) {
+        SHOW_WIN;
+    }
 }
 
-void ui_draw_panel(uint8_t lines)
+void ui_load_gfx(void)
 {
-    draw_panel(0, 0, 20, lines + 2);
-}
+    // Switch to CGB's VRAM Bank 1 to load UI tile data separate from level
+    // and sprite tiles, and initialize the whole window attribute map while we
+    // are at it.
+    VBK_REG = VBK_BANK_1;
 
-void ui_show_window_top()
-{
-    move_win(7, 0); // or y = 8 * (18 - 4) to show it on the bottom
-    
-    // Setup interrupt for hiding window when LY = 4 * 8
-    LYC_REG = 4 * 8;
+    // Window decorations, UI elements, font and symbols go to to indices 0-127
+    set_win_data(ui_tiles_TILE_ORIGIN, ui_tiles_TILE_COUNT, ui_tiles_tiles);
+
+    // Load the 2 UI palettes to CRAM
+    set_bkg_palette(UI_PALETTE_INDEX, ui_tiles_PALETTE_COUNT, ui_tiles_palettes);
+
+    // Fill window attribute map with priority (bit 7) so that OBJs don't invade
+    // and use VRAM Bank 1 and the first UI palette for all tiles (bit 3).
+    fill_win_rect(0, 0, 32, 32, S_PRIORITY | S_BANK | UI_PALETTE_INDEX);
+
+    VBK_REG = VBK_BANK_0;
+
+    // Setup ISRs for rendering the window on top
     CRITICAL {
         STAT_REG = STATF_LYC;
         ISR_VECTOR(VECTOR_STAT, lyc_isr);
         add_VBL(vbl_isr);
     }
-    set_interrupts(IE_REG | IEF_STAT | IEF_VBLANK);
+}
 
-    // Setup interrupt for showing the window at the top of the frame
-    SHOW_WIN;
+void ui_show_window_top()
+{
+    move_win(7, 0);
+    
+    // Setup interrupt for hiding window when LY = current_window_height
+    LYC_REG = current_window_height;
+    set_interrupts(IE_REG | IEF_STAT);
+
+    ui_position = UI_TOP;
+}
+
+void ui_show_window_bottom()
+{
+    move_win(7, 8 * (18 - 4));
+
+    // Disable the interrupt for LY = current_window_height
+    set_interrupts(IE_REG & ~IEF_STAT);
+
+    // Hide window for the remaining of this frame to avoid flashing the screen
+    // with the window tilemap. It gets shown by the vblank handler.
+    HIDE_WIN;
+    
+    ui_position = UI_BOTTOM;
+}
+
+void ui_hide_window()
+{
+    set_interrupts(IE_REG & ~IEF_STAT);
+    HIDE_WIN;
+    ui_position = UI_HIDDEN;
 }
 
 void ui_put_text(uint8_t x, uint8_t y, uint8_t w, char* text)
 {
-    
-    // strcpy(&_SCRN1[y * DEVICE_SCREEN_BUFFER_WIDTH + x], text); // Prone to tile corruption!
     set_win_tiles(x, y, w, 1, text);
 }
 
@@ -110,4 +132,10 @@ void draw_panel(uint8_t x, uint8_t y, uint8_t width, uint8_t height)
 
     // Fill
     fill_win_rect(x + 1, y + 1, width - 2, height - 2, ui_tiles_fill_tile);
+}
+
+void ui_draw_panel(uint8_t lines)
+{
+    current_window_height = 8 * (lines + 2);
+    draw_panel(0, 0, 20, lines + 2);
 }

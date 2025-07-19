@@ -18,7 +18,8 @@
         "my_sprites.h": "c",
         "stdbool.h": "c",
         "gbdk-lib.h": "c",
-        "provides.h": "c"
+        "provides.h": "c",
+        "isr.h": "c"
     },
     "problems.autoReveal": false,
     "debug.terminal.clearBeforeReusing": true,
