@@ -39,6 +39,10 @@ void lyc_isr_c(void) INTERRUPT CRITICAL PRESERVES_REGS(b, c, d, e, h, l)
 
 void lyc_isr(void) INTERRUPT CRITICAL NAKED PRESERVES_REGS(b, c, d, e, h, l)
 {
+    // This is the generated assembly code for HIDE_WIN.
+    // It only touches the A register, so there's no need to push BC, DE and HL
+    // to the stack. Doing so would take too much time as there's only 22 CPU
+    // cycles to turn the window layer off before the line starts to be rendered!
     __asm
     push af
     ldh	a, (_LCDC_REG)
@@ -85,10 +89,11 @@ void ui_put_text(uint8_t x, uint8_t y, uint8_t w, char* text)
 
 void draw_panel(uint8_t x, uint8_t y, uint8_t width, uint8_t height)
 {
-    // Flip some tiles
+    // Flip some tiles and switch palette for the panel body
     VBK_REG = VBK_ATTRIBUTES;
     fill_win_rect(x + width - 1, y + 1, 1, height - 2, S_FLIPX | S_PRIORITY | S_BANK | UI_PALETTE_INDEX);
     fill_win_rect(x + 1, y + height - 1, width - 2, 1, S_FLIPY | S_PRIORITY | S_BANK | UI_PALETTE_INDEX);
+    fill_win_rect(x + 1, y + 1, width - 2, height - 2, S_PRIORITY | S_BANK | (UI_PALETTE_INDEX + 1));
     VBK_REG = VBK_TILES;
 
     // Corners
