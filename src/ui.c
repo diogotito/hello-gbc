@@ -17,21 +17,16 @@ uint8_t current_window_height = 8;
 
 enum ui_win_pos ui_position = UI_TOP;
 
-void lyc_isr_c(void) INTERRUPT CRITICAL PRESERVES_REGS(b, c, d, e, h, l)
-{
-    HIDE_WIN;
-}
-
 void lyc_isr(void) INTERRUPT CRITICAL NAKED PRESERVES_REGS(b, c, d, e, h, l)
 {
     // This is the generated assembly code for HIDE_WIN.
     // It only touches the A register, so there's no need to push BC, DE and HL
     // to the stack. Doing so would take too much time as there's only 22 CPU
-    // cycles to turn the window layer off before the line starts to be rendered!
+    // cycles to turn the window layer off before the line starts to get rendered!
     __asm
     push af
     ldh	a, (_LCDC_REG)
-	and	a, #0xdf
+	and	a, #~LCDCF_WINON
 	ldh	(_LCDC_REG), a
     pop af
     reti
