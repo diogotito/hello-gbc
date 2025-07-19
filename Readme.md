@@ -16,6 +16,10 @@ An experiment with GBDK for a TRPG concept for the GB Compo 2025. We don't have 
 
 Just invoke `make` or launch `build_and_run.bat` depending on your system.
 
+Then launch `obj\Example.gb` on your favourite emulator:
+
+<https://github.com/user-attachments/assets/7f867e8b-3e77-4b5d-a714-b58fe6636e25>
+
 ## Development
 
 can be done on Linux and Mac with GBDK and **GNU Make** installed.
@@ -48,7 +52,3 @@ make
 ```
 
 For now, these have to be run before doing `make` on the repository root.
-
-## Footage
-
-<https://github.com/user-attachments/assets/c4220f88-1ccf-42b1-a6c5-2f09c5fa270a>
