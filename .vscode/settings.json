@@ -19,7 +19,9 @@
         "stdbool.h": "c",
         "gbdk-lib.h": "c",
         "provides.h": "c",
-        "isr.h": "c"
+        "isr.h": "c",
+        "input.h": "c",
+        "manager.h": "c"
     },
     "problems.autoReveal": false,
     "debug.terminal.clearBeforeReusing": true,

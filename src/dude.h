@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <gb/gb.h>
 #include "my_sprites.h"
 
 typedef enum DudeState

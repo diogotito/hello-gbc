@@ -27,12 +27,21 @@ endif
 PROJECTNAME    = Example
 
 SRCDIR      = src
+SCNDIR     := $(SRCDIR)/scene
+# ENTITIESDIR := $(SRCDIR)/entities, for example
+# ...
+CDIRS      := $(SRCDIR) $(SCNDIR)
+
 OBJDIR      = obj
 RESDIR      = res
 BINS	    = $(OBJDIR)/$(PROJECTNAME).gb
-CSOURCES    = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.c))) $(foreach dir,$(RESDIR),$(notdir $(wildcard $(dir)/*.c)))
+
+CSOURCES    = $(foreach dir,$(CDIRS),$(notdir $(wildcard $(dir)/*.c))) $(foreach dir,$(RESDIR),$(notdir $(wildcard $(dir)/*.c)))
 ASMSOURCES  = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.s)))
-OBJS       = $(CSOURCES:%.c=$(OBJDIR)/%.o) $(ASMSOURCES:%.s=$(OBJDIR)/%.o)
+OBJS        = $(CSOURCES:%.c=$(OBJDIR)/%.o) $(ASMSOURCES:%.s=$(OBJDIR)/%.o)
+
+# $(info CSOURCES = $(CSOURCES))
+# $(info OBJS     = $(OBJS))
 
 all:	prepare $(BINS)
 
@@ -40,13 +49,24 @@ compile.bat: Makefile
 	@echo "REM Automatically generated from Makefile" > compile.bat
 	@make -sn | sed s,$(GBDK_HOME),C:/tools/gbdk/, | sed y/\\//\\\\/ | sed s/mkdir\ -p\/mkdir\/ | grep -v make >> compile.bat
 
-# Compile .c files in "src/" to .o object files
-$(OBJDIR)/%.o:	$(SRCDIR)/%.c
-	$(LCC) $(LCCFLAGS) -c -o $@ $<
 
-# Compile .c files in "res/" to .o object files
-$(OBJDIR)/%.o:	$(RESDIR)/%.c
-	$(LCC) $(LCCFLAGS) -c -o $@ $<
+# Canned recipe shared by all C compilation rules
+define compile-c =
+$(LCC) $(LCCFLAGS) -c -o $@ $<
+endef
+
+define newline =
+
+
+endef
+
+# Compile .c files in "src/", "src/scene/" and "res/ to .o object files
+# by dynamically generating rules like these for each word in $(CDIRS):
+# $(OBJDIR)/%.o:	src/somewhere_in_CDIRS/%.c ; $(compile-c)
+$(eval $(foreach CDIR,$(CDIRS),$(newline)$\
+$$(OBJDIR)/%.o: $(CDIR)/%.c ; $$(compile-c)))
+
+$(OBJDIR)/%.o:	$(RESDIR)/%.c ; $(compile-c)
 
 # Compile .s assembly files in "src/" to .o object files
 $(OBJDIR)/%.o:	$(SRCDIR)/%.s
