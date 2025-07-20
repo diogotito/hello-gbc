@@ -23,5 +23,18 @@
     },
     "problems.autoReveal": false,
     "debug.terminal.clearBeforeReusing": true,
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+        "*.png": "${capture}.c, ${capture}.h",
+        "*.asm": "${capture}.lst, ${capture}.rst, ${capture}.sym, ${capture}.adb, ${capture}.o",
+        "*.gb": "${capture}.map, ${capture}.noi, ${capture}.cdb, ${capture}.ihx",
+        "*.c": "${capture}.h",
+        "Makefile": "*.ps1, *.bat"
+    },
+    "workbench.editor.customLabels.patterns": {
+        "*/res/*": "🖌️ ${filename}.${extname}",
+        "*/obj/*": "⚙️ ${filename} - ${extname}",
+    },
+    "workbench.editor.defaultBinaryEditor": "hexEditor.hexedit"
 }
