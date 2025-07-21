@@ -14,6 +14,7 @@ png2asset ui_tiles.png %TILESET_ARGS% -tile_origin 13 -tiles_only -keep_palette_
 @echo. & echo %ESC%[32m=== MAPS ===
 
 set "MAP_ARGS=-map -use_map_attributes"
+png2asset title.png %MAP_ARGS% -tile_origin 0
 png2asset ruins.png %MAP_ARGS% -tile_origin 0 -max_palettes 6
 
 

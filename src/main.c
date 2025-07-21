@@ -7,12 +7,12 @@
 #include <stdio.h>
 
 #include "scene/manager.h"
-#include "scene/scn_map.h"
+#include "scene/scn_title.h"
 #include "input.h"
 
 void main(void)
 {
-	scene_call(&scn_map);
+	scene_call(&scn_title);
 
     while(1) {
         input_refresh();
