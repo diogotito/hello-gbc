@@ -3,6 +3,8 @@
 # subdirectories and places the output in a "obj" subdirectory
 #
 
+.SUFFIXES:
+
 # If you move this project you can change the directory 
 # to match your GBDK root directory (ex: GBDK_HOME = "C:/GBDK/"
 ifndef GBDK_HOME
@@ -20,6 +22,8 @@ LCCFLAGS += -Wm-yC
 # GBDK_DEBUG = ON
 ifdef GBDK_DEBUG
 	LCCFLAGS += -debug -v
+else
+	LCCFLAGS += -Wf--max-allocs-per-node50000
 endif
 
 
@@ -37,7 +41,7 @@ RESDIR      = res
 BINS	    = $(OBJDIR)/$(PROJECTNAME).gb
 
 CSOURCES    = $(foreach dir,$(CDIRS),$(notdir $(wildcard $(dir)/*.c))) $(foreach dir,$(RESDIR),$(notdir $(wildcard $(dir)/*.c)))
-ASMSOURCES  = $(foreach dir,$(SRCDIR),$(notdir $(wildcard $(dir)/*.s)))
+ASMSOURCES  = $(foreach dir,$(CDIRS),$(notdir $(wildcard $(dir)/*.s)))
 OBJS        = $(CSOURCES:%.c=$(OBJDIR)/%.o) $(ASMSOURCES:%.s=$(OBJDIR)/%.o)
 
 # $(info CSOURCES = $(CSOURCES))
@@ -86,5 +90,5 @@ prepare:
 
 clean:
 #	rm -f  *.gb *.ihx *.cdb *.adb *.noi *.map
-	rm -f  $(OBJDIR)/*.*
+	-rm -f  $(OBJDIR)/*.*
 

@@ -3,6 +3,6 @@
 
 #include "manager.h"
 
-extern scene_desc scn_map;
+extern const scene_desc scn_map;
 
 #endif

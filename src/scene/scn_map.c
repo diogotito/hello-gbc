@@ -3,7 +3,10 @@
 #include "../ui.h"
 #include "../../res/ruins.h"
 
-scene_desc scn_map = {
+void scn_map_process(void);
+void scn_map_init(void);
+
+const scene_desc scn_map = {
     .process_fn = scn_map_process,
     .init_fn = scn_map_init,
     .finalize_fn = nullptr,
