@@ -21,7 +21,8 @@ png2asset ruins.png %MAP_ARGS% -tile_origin 0 -max_palettes 6
 @echo. & echo %ESC%[34m=== OBJS ===
 
 set "SPRITE_ARGS=-spr8x8 -px 0 -py 0"
-png2asset dude-sheet.png %SPRITE_ARGS% -tile_origin 80 -sw 16 -sh 16
+png2asset dude-sheet.png %SPRITE_ARGS% -tile_origin 80  -sw 16 -sh 16
+png2asset cursor.png     %SPRITE_ARGS% -tile_origin 100 -sw 16 -sh 16
 
 @echo %ESC%[0m
 @echo _

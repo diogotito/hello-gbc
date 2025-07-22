@@ -5,9 +5,7 @@ cd /d "%~dp0"
 rmdir /S/Q obj
 
 pushd res
-png2asset ui_tiles.png -map -tile_origin 13 -tiles_only -keep_palette_order -keep_duplicate_tiles
-png2asset ruins.png -map -tile_origin 0 -use_map_attributes
-png2asset dude-sheet.png -tile_origin 80 -sw 16 -sh 16 -px 0 -py 0
+_make_gfx
 popd
 
 mkdir obj

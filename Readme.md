@@ -39,16 +39,5 @@ in the shell invoked by make.
 
 ### When changing the graphics in `res/`
 
-These are the commands that process the assets into compilable modules that will
-be linked with the rest of the ROM:
-
-```sh
-cd res
-png2asset ui_tiles.png -map -tile_origin 13 -tiles_only -keep_palette_order -keep_duplicate_tiles
-png2asset ruins.png -map -tile_origin 0 -use_map_attributes
-png2asset dude-sheet.png -tile_origin 80 -sw 16 -sh 16 -px 0 -py 0
-cd ..
-make
-```
-
-For now, these have to be run before doing `make` on the repository root.
+Regenerate the matching `.c` and `.h` files with `png2asset` by running `make`
+or launching `_make_gfx.bat` depending on your system.

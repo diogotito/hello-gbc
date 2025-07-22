@@ -5,13 +5,11 @@
 
 .SUFFIXES:
 
-# If you move this project you can change the directory 
-# to match your GBDK root directory (ex: GBDK_HOME = "C:/GBDK/"
-ifndef GBDK_HOME
-	GBDK_HOME = ../../../
+ifdef GBDK_HOME
+	GBDK_BINS = $(GBDK_HOME)bin/
 endif
 
-LCC = $(GBDK_HOME)bin/lcc 
+LCC = $(GBDK_BINS)lcc
 
 # C23 standard
 LCCFLAGS += -Wf--std-c23
@@ -47,11 +45,11 @@ OBJS        = $(CSOURCES:%.c=$(OBJDIR)/%.o) $(ASMSOURCES:%.s=$(OBJDIR)/%.o)
 # $(info CSOURCES = $(CSOURCES))
 # $(info OBJS     = $(OBJS))
 
-all:	prepare $(BINS)
+all:	prepare assets $(BINS)
 
 compile.bat: Makefile
 	@echo "REM Automatically generated from Makefile" > compile.bat
-	@make -sn | sed s,$(GBDK_HOME),C:/tools/gbdk/, | sed y/\\//\\\\/ | sed s/mkdir\ -p\/mkdir\/ | grep -v make >> compile.bat
+	@make -sn | sed s,$(GBDK_BINS),C:/tools/gbdk/, | sed y/\\//\\\\/ | sed s/mkdir\ -p\/mkdir\/ | grep -v make >> compile.bat
 
 
 # Canned recipe shared by all C compilation rules
@@ -88,7 +86,12 @@ $(BINS):	$(OBJS)
 prepare:
 	mkdir -p $(OBJDIR)
 
+assets:
+	$(MAKE) -C res
+
 clean:
 #	rm -f  *.gb *.ihx *.cdb *.adb *.noi *.map
-	-rm -f  $(OBJDIR)/*.*
+	-rm -f $(OBJDIR)/*.*
+	-$(MAKE) -C res clean
 
+.PHONY: all prepare assets clean
