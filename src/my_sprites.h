@@ -6,6 +6,7 @@
 typedef struct my_metasprite
 {
     uint8_t frame;
+    uint8_t anim;
     uint8_t blinking_countdown;
     bool flipX;
     uint8_t props;

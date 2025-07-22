@@ -32,12 +32,14 @@ void scn_map_init(void)
     // Turn the background map on to make it visible
     SHOW_BKG;
 
+    // Load unit sprite
     dude_load_gfx();
     static const palette_color_t black_palette[] = {RGB8(0, 0, 0), RGB8(159, 159, 159), RGB8(255, 0, 0), RGB8(0, 0, 0)};
     set_sprite_palette(1, 1, black_palette);
     SPRITES_8x8;
     SHOW_SPRITES;
 
+    // Load and set up UI
     ui_load_gfx();
     ui_draw_panel(2);
     ui_put_text(2, 1, "\"HELLO, WORLD!?\"");
@@ -45,7 +47,7 @@ void scn_map_init(void)
 }
 
 dude_spr dude = {
-    {.frame = 0, .flipX = false, .x = 112, .y = 32},
+    {.frame = 0, .anim = 0, .flipX = false, .x = 112, .y = 32},
     DUDE_WAITING
 };
 
