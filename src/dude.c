@@ -39,14 +39,14 @@ void dude_draw(dude_spr *dude)
     {
         move_metasprite_flipx(
             dude_sheet_metasprites[dude->spr.anim + ((dude->spr.frame & 0x20) >> 5)],
-            dude_sheet_TILE_ORIGIN, dude->spr.props, /* base tile */ 0,
+            dude_sheet_TILE_ORIGIN, dude->spr.props, /* base tile */ 10,
             dude->spr.x + dude_sheet_WIDTH + 8, dude->spr.y + 16);
     }
     else
     {
         move_metasprite_ex(
             dude_sheet_metasprites[dude->spr.anim + ((dude->spr.frame & 0x20) >> 5)],
-            dude_sheet_TILE_ORIGIN, dude->spr.props, /* base tile */ 0,
+            dude_sheet_TILE_ORIGIN, dude->spr.props, /* base tile */ 10,
             dude->spr.x + 8, dude->spr.y + 16);
     }
 }

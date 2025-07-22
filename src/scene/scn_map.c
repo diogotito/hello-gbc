@@ -2,6 +2,7 @@
 #include "../dude.h"
 #include "../ui.h"
 #include "../../res/ruins.h"
+#include "../../res/cursor.h"
 
 void scn_map_process(void);
 void scn_map_init(void);
@@ -39,6 +40,10 @@ void scn_map_init(void)
     SPRITES_8x8;
     SHOW_SPRITES;
 
+    // Load cursor
+    set_sprite_data(cursor_TILE_ORIGIN, cursor_TILE_COUNT, cursor_tiles);
+    set_sprite_palette(2, cursor_PALETTE_COUNT, cursor_palettes);
+
     // Load and set up UI
     ui_load_gfx();
     ui_draw_panel(2);
@@ -53,6 +58,7 @@ dude_spr dude = {
 
 void scn_map_process(void)
 {
+    // Dude
     dude_update(&dude);
     dude_draw(&dude);
 
@@ -64,4 +70,9 @@ void scn_map_process(void)
     {
         ui_show_window_bottom();
     }
+
+    // Cursor
+    move_metasprite_ex(cursor_metasprites[(sys_time >> 2) % 3], cursor_TILE_ORIGIN,
+        /* base_prop */ 0x00, /* base_sprite */ 0 /* <- appears on top of all OBJs*/,
+        20, 20);
 }

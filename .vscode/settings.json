@@ -21,7 +21,8 @@
         "provides.h": "c",
         "isr.h": "c",
         "input.h": "c",
-        "manager.h": "c"
+        "manager.h": "c",
+        "cursor.h": "c"
     },
     "problems.autoReveal": false,
     "debug.terminal.clearBeforeReusing": true,
