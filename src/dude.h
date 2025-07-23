@@ -6,8 +6,7 @@
 #include <gb/gb.h>
 #include "my_sprites.h"
 
-typedef enum DudeState
-{
+typedef enum DudeState {
     DUDE_WAITING,
     DUDE_MOVING_RIGHT = J_RIGHT,
     DUDE_MOVING_LEFT = J_LEFT,
@@ -15,6 +14,17 @@ typedef enum DudeState
     DUDE_MOVING_DOWN = J_DOWN,
     DUDE_BLINKING,
 } DudeState;
+
+typedef enum DudeCommands {
+    CMD_NOOP = 0,
+    CMD_GO_RIGHT = DUDE_MOVING_RIGHT,
+    CMD_GO_LEFT = DUDE_MOVING_LEFT,
+    CMD_GO_UP = DUDE_MOVING_UP,
+    CMD_GO_DOWN = DUDE_MOVING_DOWN,
+} DudeCommands;
+
+void dude_enqueue(DudeCommands cmd);
+DudeCommands dude_dequeue();
 
 typedef struct dude_spr {
     my_metasprite_t spr;

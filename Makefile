@@ -4,9 +4,10 @@
 #
 
 .SUFFIXES:
+.PHONY: all prepare assets clean
 
 ifdef GBDK_HOME
-	GBDK_BINS = $(GBDK_HOME)bin/
+	GBDK_BINS = $(GBDK_HOME)/bin/
 endif
 
 LCC = $(GBDK_BINS)lcc
@@ -93,5 +94,3 @@ clean:
 #	rm -f  *.gb *.ihx *.cdb *.adb *.noi *.map
 	-rm -f $(OBJDIR)/*.*
 	-$(MAKE) -C res clean
-
-.PHONY: all prepare assets clean

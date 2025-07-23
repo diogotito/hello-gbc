@@ -23,9 +23,35 @@ static const uint8_t ruins_TILE_PASSABILITY[] = {
     0,                    0,      0,      0,      0,      0,      0,      0,      0,      0,      0,           0,
 };
 
+#define MAX_COMMANDS 32
+
+struct cmd_queue {
+    DudeCommands queue[MAX_COMMANDS];
+    uint8_t back;
+    uint8_t front;
+} dude_cmds = { {CMD_NOOP}, 0, 0 };
+
+void dude_enqueue(DudeCommands cmd) {
+    if ((dude_cmds.back + 1) % MAX_COMMANDS == dude_cmds.front) {
+        return;
+    }
+    dude_cmds.back = (dude_cmds.back + 1) % MAX_COMMANDS;
+    dude_cmds.queue[dude_cmds.back] = cmd;
+}
+
+DudeCommands dude_dequeue() {
+    if (dude_cmds.front == dude_cmds.back) {
+        return CMD_NOOP;
+    }
+    DudeCommands cmd = dude_cmds.queue[dude_cmds.front];
+    dude_cmds.front = (dude_cmds.front + 1) % MAX_COMMANDS;
+    return cmd;
+}
+
 void dude_load_gfx() {
     set_sprite_data(dude_sheet_TILE_ORIGIN, dude_sheet_TILE_COUNT, dude_sheet_tiles);
     set_sprite_palette(0, dude_sheet_PALETTE_COUNT, dude_sheet_palettes);
+
 }
 
 void dude_update(dude_spr *dude)
@@ -51,6 +77,23 @@ void dude_draw(dude_spr *dude)
     }
 }
 
+DudeState dude_process_next_command(dude_spr *dude)
+{
+    switch (dude_dequeue())
+    {
+    case CMD_GO_RIGHT:
+        return start_moving_towards(dude, J_RIGHT, 1, 0);
+    case CMD_GO_LEFT:
+        return start_moving_towards(dude, J_LEFT, -1, 0);
+    case CMD_GO_UP:
+        return start_moving_towards(dude, J_UP, 0, -1);
+    case CMD_GO_DOWN:
+        return start_moving_towards(dude, J_DOWN, 0, 1);
+    default:
+        return DUDE_WAITING;
+    }
+}
+
 DudeState dude_handle_movement(dude_spr *dude)
 {
     static int8_t dude_speed = 1;
@@ -58,16 +101,8 @@ DudeState dude_handle_movement(dude_spr *dude)
     switch (dude->cur_state)
     {
     case DUDE_WAITING:
-        if (cur_joypad & J_RIGHT)
-            return start_moving_towards(dude, J_RIGHT, 1, 0);
-        if (cur_joypad & J_LEFT)
-            return start_moving_towards(dude, J_LEFT, -1, 0);
-        if (cur_joypad & J_UP)
-            return start_moving_towards(dude, J_UP, 0, -1);
-        if (cur_joypad & J_DOWN)
-            return start_moving_towards(dude, J_DOWN, 0, 1);
         dude->spr.frame++;
-        return DUDE_WAITING;
+        return dude_process_next_command(dude);
     case DUDE_MOVING_RIGHT:
         dude->spr.x += dude_speed;
         dude->spr.frame += 4;

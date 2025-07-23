@@ -1,6 +1,8 @@
+#include <stdio.h>
 #include "scn_map.h"
 #include "../dude.h"
 #include "../ui.h"
+#include "../input.h"
 #include "../../res/ruins.h"
 #include "../../res/cursor.h"
 
@@ -43,11 +45,14 @@ void scn_map_init(void)
     // Load cursor
     set_sprite_data(cursor_TILE_ORIGIN, cursor_TILE_COUNT, cursor_tiles);
     set_sprite_palette(2, cursor_PALETTE_COUNT, cursor_palettes);
+    static const palette_color_t white_palette[] = {RGB8(0, 0, 0), RGB8(255, 255, 255), RGB8(255, 255, 255), RGB8(255, 255, 255)};
+    set_sprite_palette(3, 1, white_palette);
 
     // Load and set up UI
     ui_load_gfx();
     ui_draw_panel(2);
-    ui_put_text(2, 1, "\"HELLO, WORLD!?\"");
+    ui_put_text(1, 1, "CUR@( , )");
+    ui_put_text(1, 2, "GUY@(   ,   )");
     ui_show_window_top();
 }
 
@@ -56,23 +61,69 @@ dude_spr dude = {
     DUDE_WAITING
 };
 
+static uint8_t cursor_x, cursor_y, cursor_cur_palette;
+static bool cursor_on_dude;
+
+static inline void cursor_update()
+{
+    // Update based on D-pad input
+    if (cursor_x < 9 && (right_just_pressed || right_pressed && frames_dpad_pressed > 16 && !(frames_dpad_pressed & 0x03)))  cursor_x += 1;
+    if (cursor_x > 0 && (left_just_pressed || left_pressed && frames_dpad_pressed > 16 && !(frames_dpad_pressed & 0x03)))    cursor_x -= 1;
+    if (cursor_y > 0 && (up_just_pressed || up_pressed && frames_dpad_pressed > 16 && !(frames_dpad_pressed & 0x03)))        cursor_y -= 1;
+    if (cursor_y < 8 && (down_just_pressed || down_pressed && frames_dpad_pressed > 16 && !(frames_dpad_pressed & 0x03)))    cursor_y += 1;
+
+    cursor_on_dude = (cursor_x == dude.spr.x / 16 && cursor_y == dude.spr.y / 16);
+}
+
+static inline void cursor_draw()
+{
+    move_metasprite_ex(cursor_metasprites[(sys_time >> 2) % 3], cursor_TILE_ORIGIN,
+                       2 + cursor_on_dude, 0,
+                       cursor_x * 16 + 8, cursor_y * 16 + 16);
+}
+
 void scn_map_process(void)
 {
     // Dude
     dude_update(&dude);
     dude_draw(&dude);
-
-    if (dude.spr.y > 88 && ui_position != UI_TOP)
-    {
-        ui_show_window_top();
+    
+    if (cursor_on_dude && a_just_pressed) {
+        dude_enqueue(CMD_GO_UP);
+        dude_enqueue(CMD_GO_RIGHT);
+        dude_enqueue(CMD_GO_LEFT);
+        dude_enqueue(CMD_GO_LEFT);
+        dude_enqueue(CMD_GO_DOWN);
+        dude_enqueue(CMD_GO_RIGHT);
+        dude_enqueue(CMD_GO_DOWN);
     }
-    else if (dude.spr.y < 64 && ui_position != UI_BOTTOM)
-    {
-        ui_show_window_bottom();
-    }
+    
+    if (b_pressed && up_just_pressed)    dude_enqueue(CMD_GO_UP);
+    if (b_pressed && down_just_pressed)  dude_enqueue(CMD_GO_DOWN);
+    if (b_pressed && left_just_pressed)  dude_enqueue(CMD_GO_LEFT);
+    if (b_pressed && right_just_pressed) dude_enqueue(CMD_GO_RIGHT);
 
     // Cursor
-    move_metasprite_ex(cursor_metasprites[(sys_time >> 2) % 3], cursor_TILE_ORIGIN,
-        /* base_prop */ 0x00, /* base_sprite */ 0 /* <- appears on top of all OBJs*/,
-        20, 20);
+    cursor_update();
+    cursor_draw();
+
+    // UI
+    set_win_tile_xy(6, 1, '0' + cursor_x);
+    set_win_tile_xy(8, 1, '0' + cursor_y);
+
+    char dude_xy_str[8];
+    sprintf(dude_xy_str, "%3d,%3d", dude.spr.x, dude.spr.y);
+    ui_put_text(6, 2, dude_xy_str);
+    
+    if (cursor_on_dude) {
+        ui_put_text(11, 1, "PRESS A!");
+    } else {
+        ui_put_text(11, 1, "        ");
+    }
+
+    if (cursor_y > 5 && ui_position != UI_TOP) {
+        ui_show_window_top();
+    } else if (cursor_y < 3 && ui_position != UI_BOTTOM) {
+        ui_show_window_bottom();
+    }
 }

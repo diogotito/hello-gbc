@@ -5,6 +5,7 @@
 ifdef GBDK_HOME
 	GBDK_BINS := $(GBDK_HOME)/bin/
 endif
+
 PNG2ASSET := $(GBDK_BINS)png2asset
 
 # png2asset flags for groups of assets
