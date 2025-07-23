@@ -18,7 +18,7 @@ Just invoke `make` or launch `build_and_run.bat` depending on your system.
 
 Then launch `obj\Example.gb` on your favourite emulator:
 
-<https://github.com/user-attachments/assets/7f867e8b-3e77-4b5d-a714-b58fe6636e25>
+<https://github.com/user-attachments/assets/dd451358-3fd7-4121-91a7-5ec992719ba2>
 
 ## Development
 
