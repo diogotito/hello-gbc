@@ -46,9 +46,11 @@ CSOURCES    = $(notdir $(filter-out $(PARTIALS),\
 ASMSOURCES  = $(foreach dir,$(CDIRS),$(notdir $(wildcard $(dir)/*.s)))
 OBJS        = $(CSOURCES:%.c=$(OBJDIR)/%.o) $(ASMSOURCES:%.s=$(OBJDIR)/%.o)
 
+ifeq ($(MAKELEVEL),0)
 $(info PARTIALS = $(PARTIALS))
 $(info CSOURCES = $(CSOURCES))
 $(info OBJS     = $(OBJS))
+endif
 
 all:    initial_OBJS := ${OBJS}
 all:	prepare assets check_for_new_OBJS_prerequisites $(BINS)
@@ -60,7 +62,8 @@ compile.bat: Makefile
 
 # Canned recipe shared by all C compilation rules
 define compile-c =
-$(LCC) $(LCCFLAGS) -c -o $@ $<
+$(LCC) $(LCCFLAGS) -c -o $@ $< \
+$(if $(filter-out undefined,$(origin SHUT_UP_EVELYN)),| sed /EVELYN/d)
 endef
 
 define newline =
@@ -107,7 +110,8 @@ check_for_new_OBJS_prerequisites:
 	$(eval new_OBJS := $(filter-out ${initial_OBJS},${OBJS}))
 	$(if ${new_OBJS},$\
 	    $(info There are new OBJS to compile!)$\
-		$(MAKE) ${new_OBJS})
+		$(MAKE) --no-print-directory ${new_OBJS}${newline}$\
+		@echo ++++++++++++++++++)
 
 clean:
 #	rm -f  *.gb *.ihx *.cdb *.adb *.noi *.map
