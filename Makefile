@@ -50,7 +50,7 @@ $(info PARTIALS = $(PARTIALS))
 $(info CSOURCES = $(CSOURCES))
 $(info OBJS     = $(OBJS))
 
-all:    OBJS_before := ${OBJS}
+all:    initial_OBJS := ${OBJS}
 all:	prepare assets check_for_new_OBJS_prerequisites $(BINS)
 
 compile.bat: Makefile
@@ -104,10 +104,10 @@ assets:
 	@echo ------------------
 
 check_for_new_OBJS_prerequisites:
-	$(eval OBJS_after := ${OBJS})
-	$(intcmp $(words ${OBJS_before}),$(words ${OBJS_after}),$\
+	$(eval new_OBJS := $(filter-out ${initial_OBJS},${OBJS}))
+	$(if ${new_OBJS},$\
 	    $(info There are new OBJS to compile!)$\
-		$(MAKE) $(filter-out ${OBJS_before},${OBJS_after}))
+		$(MAKE) ${new_OBJS})
 
 clean:
 #	rm -f  *.gb *.ihx *.cdb *.adb *.noi *.map
