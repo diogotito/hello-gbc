@@ -43,7 +43,6 @@ const palette_color_t stroke_anim_values[32] = {
     RGB8(223, 32, 32),
 };
 
-
 static uint8_t cursor_x, cursor_y, cursor_cur_palette;
 static bool cursor_on_dude;
 

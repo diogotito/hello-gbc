@@ -4,7 +4,7 @@
 #
 
 .SUFFIXES:
-.PHONY: all prepare assets clean
+.PHONY: all prepare assets check_for_new_OBJS_prerequisites clean
 
 ifdef GBDK_HOME
 	GBDK_BINS = $(GBDK_HOME)/bin/
@@ -39,16 +39,19 @@ OBJDIR      = obj
 RESDIR      = res
 BINS	    = $(OBJDIR)/$(PROJECTNAME).gb
 
-CSOURCES    = $(filter-out %__.c,\
-                $(foreach dir,$(CDIRS),$(notdir $(wildcard $(dir)/*.c)))\
-				$(foreach dir,$(RESDIR),$(notdir $(wildcard $(dir)/*.c))))
+PARTIALS    = $(foreach dir,$(CDIRS) $(RESDIR),$(wildcard $(dir)/*__*__.c))
+CSOURCES    = $(notdir $(filter-out $(PARTIALS),\
+                $(foreach dir,$(CDIRS),$(wildcard $(dir)/*.c))\
+				$(foreach dir,$(RESDIR),$(wildcard $(dir)/*.c))))
 ASMSOURCES  = $(foreach dir,$(CDIRS),$(notdir $(wildcard $(dir)/*.s)))
 OBJS        = $(CSOURCES:%.c=$(OBJDIR)/%.o) $(ASMSOURCES:%.s=$(OBJDIR)/%.o)
 
+$(info PARTIALS = $(PARTIALS))
 $(info CSOURCES = $(CSOURCES))
 $(info OBJS     = $(OBJS))
 
-all:	prepare assets $(BINS)
+all:    OBJS_before := ${OBJS}
+all:	prepare assets check_for_new_OBJS_prerequisites $(BINS)
 
 compile.bat: Makefile
 	@echo "REM Automatically generated from Makefile" > compile.bat
@@ -71,6 +74,12 @@ endef
 $(eval $(foreach CDIR,$(CDIRS),$(newline)$\
 $$(OBJDIR)/%.o: $(CDIR)/%.c ; $$(compile-c)))
 
+# Add each __partial__.c file to the list of prerequisites of its parent's
+# .o object file
+$(eval $(foreach partial,${PARTIALS},$\
+         $(let basename,$(notdir $(firstword $(subst __, ,${partial}))),$\
+		 ${OBJDIR}/${basename}.o: ${partial}${newline})))
+
 $(OBJDIR)/%.o:	$(RESDIR)/%.c ; $(compile-c)
 
 # Compile .s assembly files in "src/" to .o object files
@@ -87,10 +96,18 @@ $(BINS):	$(OBJS)
 	$(LCC) $(LCCFLAGS) -o $(BINS) $(OBJS)
 
 prepare:
-	mkdir -p $(OBJDIR)
+	@mkdir -p $(OBJDIR)
 
 assets:
+	@echo ----- ASSETS -----
 	$(MAKE) -C res
+	@echo ------------------
+
+check_for_new_OBJS_prerequisites:
+	$(eval OBJS_after := ${OBJS})
+	$(intcmp $(words ${OBJS_before}),$(words ${OBJS_after}),$\
+	    $(info There are new OBJS to compile!)$\
+		$(MAKE) $(filter-out ${OBJS_before},${OBJS_after}))
 
 clean:
 #	rm -f  *.gb *.ihx *.cdb *.adb *.noi *.map
