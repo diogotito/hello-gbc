@@ -6,23 +6,8 @@
     "files.associations": {
         "*.jk": "javascript",
         "*.rbw": "ruby",
-        "dungeon_tiles.h": "c",
-        "stdint.h": "c",
-        "gb.h": "c",
-        "cgb.h": "c",
-        "ruins.h": "c",
-        "metasprites.h": "c",
-        "emu_debug.h": "c",
-        "string.h": "c",
-        "dude-sheet.h": "c",
-        "my_sprites.h": "c",
-        "stdbool.h": "c",
-        "gbdk-lib.h": "c",
-        "provides.h": "c",
-        "isr.h": "c",
-        "input.h": "c",
-        "manager.h": "c",
-        "cursor.h": "c"
+        "*.c": "c",
+        "*.h": "c",
     },
     "problems.autoReveal": false,
     "debug.terminal.clearBeforeReusing": true,
@@ -32,8 +17,8 @@
         "*.png": "${capture}.c, ${capture}.h",
         "*.asm": "${capture}.lst, ${capture}.rst, ${capture}.sym, ${capture}.adb, ${capture}.o",
         "*.gb": "${capture}.map, ${capture}.noi, ${capture}.cdb, ${capture}.ihx",
-        "*.c": "${capture}.h",
-        "Makefile": "*.ps1, *.bat"
+        "Makefile": "*.ps1, *.bat",
+        "*.c": "${capture}.h, ${capture}__*.c"
     },
     "workbench.editor.customLabels.patterns": {
         "*/res/*": "🖌️ ${filename}.${extname}",

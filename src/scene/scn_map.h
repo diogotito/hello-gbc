@@ -3,6 +3,10 @@
 
 #include "manager.h"
 
+// -----------------
+// Scene description
+// -----------------
+
 extern const scene_desc scn_map;
 
 #endif

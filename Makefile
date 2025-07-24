@@ -39,12 +39,14 @@ OBJDIR      = obj
 RESDIR      = res
 BINS	    = $(OBJDIR)/$(PROJECTNAME).gb
 
-CSOURCES    = $(foreach dir,$(CDIRS),$(notdir $(wildcard $(dir)/*.c))) $(foreach dir,$(RESDIR),$(notdir $(wildcard $(dir)/*.c)))
+CSOURCES    = $(filter-out %__.c,\
+                $(foreach dir,$(CDIRS),$(notdir $(wildcard $(dir)/*.c)))\
+				$(foreach dir,$(RESDIR),$(notdir $(wildcard $(dir)/*.c))))
 ASMSOURCES  = $(foreach dir,$(CDIRS),$(notdir $(wildcard $(dir)/*.s)))
 OBJS        = $(CSOURCES:%.c=$(OBJDIR)/%.o) $(ASMSOURCES:%.s=$(OBJDIR)/%.o)
 
-# $(info CSOURCES = $(CSOURCES))
-# $(info OBJS     = $(OBJS))
+$(info CSOURCES = $(CSOURCES))
+$(info OBJS     = $(OBJS))
 
 all:	prepare assets $(BINS)
 
