@@ -64,15 +64,7 @@ void scn_map_init(void)
     SHOW_SPRITES;
 
     // Load cursor
-    set_sprite_data(cursor_TILE_ORIGIN, cursor_TILE_COUNT, cursor_tiles);
-    set_sprite_palette(2, cursor_PALETTE_COUNT, cursor_palettes);
-    #define CURSOR_FILL RGB8(255, 151, 146)
-    static const palette_color_t cursor_hl_anim_palettes[] = {
-        // Palette for cursor highlighting when over a unit
-        0, CURSOR_FILL, RGB_CYAN, 0
-    };
-    set_sprite_palette(3, 1, cursor_hl_anim_palettes);
-    set_sprite_palette_entry(3, 2, stroke_anim_values[0]);
+    cursor_load_gfx();
 
     // Load and set up UI
     ui_load_gfx();

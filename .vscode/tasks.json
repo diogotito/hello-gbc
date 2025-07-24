@@ -1,56 +1,51 @@
 {
 	"version": "2.0.0",
+	"windows": {
+		"command": ".vscode\\wsl_make.bat",
+	},
+	"command": "make",
 	"tasks": [
 		{
-			"label": "make (WSL)",
-			"detail": "Builds with make",
-			"type": "process",
-			"command": "make",
-			"windows": {
-				"command": "wsl",
-				"args": [ "make" ],
-			},
-			"isBuildCommand": true,
-			"problemMatcher": [
-				"$gcc"
-			],
-			"group": {
-				"kind": "build",
-				"isDefault": true,
-			}
+			"label": "make",
+			"group": { "kind": "build", "isDefault": true }
 		},
 		{
-			"label": "make GBDK_DEBUG=ON (WSL)",
-			"detail": "Builds for debugging with make",
-			"type": "process",
-			"windows": {
-				"command": "wsl",
-				"args": [ "make", "GBDK_DEBUG=ON" ],
-			},
-			"command": "make",
-			"args": [ "GBDK_DEBUG=ON" ],
-			"dependsOn": ["make clean (WSL)"],
-			"isBuildCommand": true,
-			"problemMatcher": [
-				"$gcc"
-			],
-			"group": {
-				"kind": "build",
-				"isDefault": false,
-			}
+			"label": "make GBDK_DEBUG=ON",
+			"args": ["GBDK_DEBUG=ON"],
+			"dependsOn": ["make clean"],
+			"group": {"kind": "build", "isDefault": false}
 		},
 		{
-			"label": "make clean (WSL)",
-			"detail": "Runs `make clean`",
-			"type": "process",
-			"windows": {
-				"command": "wsl",
-				"args": [ "make", "clean" ],
-			},
-			"command": "make",
+			"label": "make clean",
 			"args": [ "clean" ],
 			"problemMatcher": [],
-			"group": "none",
+			"group": "none"
 		}
 	],
+	"problemMatcher": [
+		{
+			"owner": "cpp",
+			"source": "lcc",
+			"fileLocation": ["relative", "${workspaceFolder}"],
+			"pattern": [
+				{
+					"regexp": "^([^:]*):(\\d+):\\s+((?!warning 110)[^:]*(info|warning|error)[^:]*:\\s+.*)",
+					"file": 1, "line": 2, "message": 3, "severity": 4,
+				},
+			],
+		},
+		// so said EVELYN the modified DOG
+		/*{
+			"owner": "cpp",
+			"source": "lcc",
+			"fileLocation": ["relative", "${workspaceFolder}"],
+			"severity": "info",
+			"pattern": [
+				{
+					"regexp": "^([^:]*):(\\d+): warning 110: .*: (.*)",
+					"file": 1, "line": 2, "message": 3,
+				},
+			],
+		},*/
+	]
 }

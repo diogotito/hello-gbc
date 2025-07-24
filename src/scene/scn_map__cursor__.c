@@ -4,7 +4,9 @@
  *   dude_spr dude
  */
 
+#include <string.h>
 #include "../input.h"
+#include "../ui.h"
 #include "../../res/cursor.h"
 
 // Cursor stroke animation values
@@ -46,9 +48,23 @@ const palette_color_t stroke_anim_values[32] = {
 static uint8_t cursor_x, cursor_y, cursor_cur_palette;
 static bool cursor_on_dude;
 
+static inline void cursor_load_gfx()
+{
+    set_sprite_data(cursor_TILE_ORIGIN, cursor_TILE_COUNT, cursor_tiles);
+    set_sprite_palette(2, cursor_PALETTE_COUNT, cursor_palettes);
+
+    #define CURSOR_FILL RGB8(255, 151, 146)
+    static const palette_color_t cursor_hl_anim_palettes[] = {
+        // Palette for cursor highlighting when over a unit
+        0, CURSOR_FILL, RGB_CYAN, 0
+    };
+    set_sprite_palette(3, 1, cursor_hl_anim_palettes);
+    set_sprite_palette_entry(3, 2, stroke_anim_values[0]);
+}
+
 static inline void cursor_update()
 {
-    // Update based on D-pad input
+    // Move cursor with d-pad
     bool key_repeat = frames_dpad_pressed > 16 && !(frames_dpad_pressed & 0x03);
     if (cursor_x < 9 && (right_just_pressed || right_pressed && key_repeat)) {
         cursor_x += 1;
@@ -70,18 +86,24 @@ static inline void cursor_update()
 
 static inline void cursor_draw()
 {
+    // Update OBJs
     move_metasprite_ex(cursor_metasprites[(sys_time >> 2) % 3], cursor_TILE_ORIGIN,
-                       2 + cursor_on_dude, 0,
+                       S_PAL(2 + cursor_on_dude), 0,
                        cursor_x * 16 + 8, cursor_y * 16 + 16);
+    
+    // Animate palette
+    set_sprite_palette_entry(3, 2, stroke_anim_values[sys_time % 32]);
 
+    // Put some info in the window
     set_win_tile_xy(6, 1, '0' + cursor_x);
     set_win_tile_xy(8, 1, '0' + cursor_y);
 
     char dude_xy_str[8];
-    sprintf(dude_xy_str, "%3d,%3d", dude.spr.x, dude.spr.y);
-    ui_put_text(6, 2, dude_xy_str);
-    
-    if (cursor_on_dude) {
+    sprintf(dude_xy_str, "%03d,%03d", dude.spr.x, dude.spr.y);
+    ui_put_text(6, 2, "       ");
+    set_win_tiles(6, 2, strlen(dude_xy_str), 1, dude_xy_str);
+
+        if (cursor_on_dude) {
         ui_put_text(11, 1, "PRESS A!");
     } else {
         ui_put_text(11, 1, "        ");

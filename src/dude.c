@@ -126,7 +126,7 @@ DudeState dude_handle_movement(dude_spr *dude)
     case DUDE_BLINKING:
         --dude->spr.blinking_countdown;
         uint8_t palette = dude->spr.blinking_countdown % 4 > 1;
-        dude->spr.props = dude->spr.props & 0b11111000 | palette;
+        dude->spr.props = dude->spr.props & 0b11111000 | S_PAL(palette);
         return dude->spr.blinking_countdown ? DUDE_BLINKING : DUDE_WAITING;
     }
     return dude->cur_state;
