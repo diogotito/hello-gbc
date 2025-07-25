@@ -25,7 +25,6 @@ else
 	LCCFLAGS += -Wf--max-allocs-per-node50000
 endif
 
-
 # You can set the name of the .gb ROM file here
 PROJECTNAME    = Example
 
@@ -99,7 +98,7 @@ $(BINS):	$(OBJS)
 	$(LCC) $(LCCFLAGS) -o $(BINS) $(OBJS)
 
 prepare:
-	@mkdir -p $(OBJDIR)
+	-@$(if $(findstring Windows_NT,$(OS)),MD $(OBJDIR) || exit /b 0,mkdir -p $(OBJDIR))
 
 assets:
 	@echo ----- ASSETS -----
@@ -115,5 +114,5 @@ check_for_new_OBJS_prerequisites:
 
 clean:
 #	rm -f  *.gb *.ihx *.cdb *.adb *.noi *.map
-	-rm -f $(OBJDIR)/*.*
+	-$(if $(findstring Windows_NT,$(OS)),DEL /S/Q/F $(OBJDIR),rm -f $(OBJDIR)/*.*)
 	-$(MAKE) -C res clean
