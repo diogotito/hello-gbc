@@ -35,4 +35,4 @@ cursor.h cursor.c &: cursor.png
 
 # Cleanup task:
 clean:
-	-$(if $(findstring Windows_NT,$(OS)),DEL /Q/F,rm -f) $(OUTPUT_C_FILES)
+	-$(if $(findstring Windows_NT,$(OS)),DEL /Q/F 2>NUL,rm -f) $(OUTPUT_C_FILES)

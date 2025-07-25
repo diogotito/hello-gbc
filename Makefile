@@ -97,8 +97,16 @@ $(OBJDIR)/%.s:	$(SRCDIR)/%.c
 $(BINS):	$(OBJS)
 	$(LCC) $(LCCFLAGS) -o $(BINS) $(OBJS)
 
+
+#-------
+# Tasks
+#-------
+
+on_windows = $(findstring Windows_NT,$(OS))
+
 prepare:
-	-@$(if $(findstring Windows_NT,$(OS)),MD $(OBJDIR) || exit /b 0,mkdir -p $(OBJDIR))
+	-$(if $(on_windows),MD $(OBJDIR) 2>NUL || EXIT /B 0,$\
+	                    mkdir -p $(OBJDIR))
 
 assets:
 	@echo ----- ASSETS -----
@@ -114,5 +122,6 @@ check_for_new_OBJS_prerequisites:
 
 clean:
 #	rm -f  *.gb *.ihx *.cdb *.adb *.noi *.map
-	-$(if $(findstring Windows_NT,$(OS)),DEL /S/Q/F $(OBJDIR),rm -f $(OBJDIR)/*.*)
-	-$(MAKE) -C res clean
+	-$(if $(on_windows),DEL /S/Q/F $(OBJDIR),$\
+	                     rm -f $(OBJDIR)/*.*)
+	-@$(MAKE) -C res clean
