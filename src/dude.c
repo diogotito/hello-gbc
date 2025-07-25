@@ -25,7 +25,7 @@ static const uint8_t ruins_TILE_PASSABILITY[] = {
 
 #define MAX_COMMANDS 32
 
-struct cmd_queue {
+struct {
     DudeCommands queue[MAX_COMMANDS];
     uint8_t back;
     uint8_t front;
@@ -35,8 +35,8 @@ void dude_enqueue(DudeCommands cmd) {
     if ((dude_cmds.back + 1) % MAX_COMMANDS == dude_cmds.front) {
         return;
     }
-    dude_cmds.back = (dude_cmds.back + 1) % MAX_COMMANDS;
     dude_cmds.queue[dude_cmds.back] = cmd;
+    dude_cmds.back = (dude_cmds.back + 1) % MAX_COMMANDS;
 }
 
 DudeCommands dude_dequeue() {
