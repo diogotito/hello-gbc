@@ -17,24 +17,40 @@ typedef struct map_gfx {
     uint8_t *tile_attrs;
     uint8_t palettes_count;
     uint8_t *palettes;
-} map_gfx;
+} map_gfx_t;
 
 typedef struct map_desc {
     uint8_t width;
     uint8_t height;
-    map_gfx gfx;
+    map_gfx_t gfx;
     uint8_t *tiles_with_priority;
     uint8_t *tile_passability;
-} map_desc;
+} map_desc_t;
 
 typedef struct map_state {
     uint8_t unit_count;
     unit_spr units[MAP_MAX_UNITS];
     uint8_t occupancy[18 * 20]; // hardcoded for a map the size of the screen
-} map_state;
+} map_state_t;
 
-extern map_desc map_data;
-extern map_state map;
+#define MAP_DESC(name) map_desc_t name##_map_desc = {                         \
+                           .width = name##_MAP_ATTRIBUTES_WIDTH,              \
+                           .height = name##_MAP_ATTRIBUTES_HEIGHT,            \
+                           .gfx = {                                           \
+                               .tile_imgs_count = name##_TILE_COUNT,          \
+                               .tile_imgs_origin = name##_TILE_ORIGIN,        \
+                               .tile_imgs = name##_tiles,                     \
+                               .tile_map = name##_map,                        \
+                               .tile_attrs = name##_map_attributes,           \
+                               .palettes_count = name##_PALETTE_COUNT,        \
+                               .palettes = name##_palettes,                   \
+                           },                                                 \
+                           .tiles_with_priority = name##_tiles_with_priority, \
+                           .tile_passability = name##_tile_passability,       \
+}
+
+extern map_desc_t map_data;
+extern map_state_t map;
 
 void map_init();
 void map_load_gfx();

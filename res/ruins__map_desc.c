@@ -1,7 +1,6 @@
-#include "../src/game/map.h"
-#include "ruins.h"
+#include "ruins__map_desc.h"
 
-const uint8_t ruins_tile_passability[] = {
+const uint8_t ruins_tile_passability[132] = {
     // bits: down | up | left | right
     0,                    0,      0,      0,      0,      0,      0,      0,      0,      0,      0,           0,
 
@@ -21,26 +20,11 @@ const uint8_t ruins_tile_passability[] = {
     0,                    0,      0,      0,      0,      0,      0,      0,      0,      0,      0,           0,
 };
 
-
-const uint8_t ruins_tiles_with_priority[] = {
+const uint8_t ruins_tiles_with_priority[5] = {
 //  x, y
     6, 1,
     7, 1,
     MPRI_END // end
 };
 
-map_desc ruins_map_desc = {
-    .width = ruins_MAP_ATTRIBUTES_WIDTH,
-    .height = ruins_MAP_ATTRIBUTES_HEIGHT,
-    .gfx = {
-        .tile_imgs_count = ruins_TILE_COUNT,
-        .tile_imgs_origin = ruins_TILE_ORIGIN,
-        .tile_imgs = ruins_tiles,
-        .tile_map = ruins_map,
-        .tile_attrs = ruins_map_attributes,
-        .palettes_count = ruins_PALETTE_COUNT,
-        .palettes = ruins_palettes,
-    },
-    .tiles_with_priority = ruins_tiles_with_priority,
-    .tile_passability = ruins_tile_passability,
-};
+const MAP_DESC(ruins);

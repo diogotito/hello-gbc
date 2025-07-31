@@ -1,16 +1,14 @@
 #include "map.h"
-#include "../../res/ruins.h"
+#include "../../res/ruins__map_desc.h"
 
-#include "map__ruins__.c"
+map_desc_t map_data;
 
-map_desc map_data;
-
-map_state map = {
+map_state_t map = {
     .unit_count = 0
 };
 
 void map_init() {
-    map_data = map_data__ruins; // TODO get this from a pointer passed to a "map_load()" maybe
+    map_data = ruins_map_desc; // TODO get this from a pointer passed to a "map_load()" maybe
     map.unit_count = 0;
 }
 
