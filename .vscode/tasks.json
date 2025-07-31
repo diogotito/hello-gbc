@@ -29,6 +29,7 @@
 			"fileLocation": ["relative", "${workspaceFolder}"],
 			"pattern": [
 				{
+					//          (file ) (line)     (message             (severity          )            )
 					"regexp": "^([^:]*):(\\d+):\\s+((?!warning 110)[^:]*(info|warning|error)[^:]*:\\s+.*)",
 					"file": 1, "line": 2, "message": 3, "severity": 4,
 				},
