@@ -3,25 +3,14 @@
 
 #include "map__ruins__.c"
 
-map_desc map_data = {
-    .width = ruins_MAP_ATTRIBUTES_WIDTH,
-    .height = ruins_MAP_ATTRIBUTES_HEIGHT,
-    .gfx = {
-        .tile_imgs_count = ruins_TILE_COUNT,
-        .tile_imgs_origin = ruins_TILE_ORIGIN,
-        .tile_imgs = ruins_tiles,
-        .tile_map = ruins_map,
-        .tile_attrs = ruins_map_attributes,
-        .palettes_count = ruins_PALETTE_COUNT,
-        .palettes = ruins_palettes,
-    },
-    .tiles_with_priority = ruins_TILES_WITH_PRIORITY, // map__ruins__.c
-    .tile_passability = ruins_TILE_PASSABILITY, // map__ruins__.c
+map_desc map_data;
+
+map_state map = {
+    .unit_count = 0
 };
 
-map_state map = {};
-
 void map_init() {
+    map_data = map_data__ruins; // TODO get this from a pointer passed to a "map_load()" maybe
     map.unit_count = 0;
 }
 
