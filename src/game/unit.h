@@ -9,6 +9,8 @@
 #include <gb/gb.h>
 #include "../my_sprites.h"
 
+typedef uint8_t UnitID;
+
 typedef enum UnitState {
     UNIT_WAITING,
     UNIT_MOVING_RIGHT = J_RIGHT,
@@ -32,6 +34,7 @@ UnitCommands unit_dequeue();
 typedef struct unit_spr {
     my_metasprite_t spr;
     UnitState cur_state;
+    UnitID id;
 } unit_spr;
 
 void unit_load_gfx();

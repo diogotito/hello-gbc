@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include "scn_map.h"
 #include "../game/unit.h"
+#include "../game/map.h"
 #include "../ui.h"
-#include "../../res/ruins.h"
 
 // -----------------
 // Scene description
@@ -39,19 +39,8 @@ unit_spr unit = {
 
 void scn_map_init(void)
 {
-    // Load background tile patterns
-    set_bkg_data(ruins_TILE_ORIGIN, ruins_TILE_COUNT, ruins_tiles);
-
-    // Transfer color palettes
-    set_bkg_palette(0, ruins_PALETTE_COUNT, ruins_palettes);
-
-    // Load background attributes and map
-    VBK_REG = VBK_ATTRIBUTES;
-    set_bkg_tiles(0, 0, ruins_MAP_ATTRIBUTES_WIDTH, ruins_MAP_ATTRIBUTES_HEIGHT, ruins_map_attributes);
-    set_bkg_tile_xy(6, 1, ruins_map_attributes[26] | S_PRIORITY); // Make unit appear behind reservoir
-    set_bkg_tile_xy(7, 1, ruins_map_attributes[27] | S_PRIORITY); // which exist on these 2 positions on the map
-    VBK_REG = VBK_TILES;
-    set_bkg_tiles(0, 0, ruins_MAP_ATTRIBUTES_WIDTH, ruins_MAP_ATTRIBUTES_HEIGHT, ruins_map);
+    map_init();
+    map_load_gfx();
 
     // Turn the background map on to make it visible
     SHOW_BKG;

@@ -2,7 +2,7 @@
 #include "unit.h"
 #include "../../res/dude-sheet.h"
 #include "../input.h"
-#include "../game/map.h"
+#include "map.h"
 
 #define MAX_COMMANDS 32
 
@@ -150,7 +150,7 @@ UnitState start_moving_towards(
     // Check if next tile is passable
     uint8_t check_x = (x + 1) + dx;
     uint8_t check_y = (y + 1) + dy;
-    bool canMove = ruins_TILE_PASSABILITY[12 * check_y + check_x] & next_state;
+    bool canMove = map_data.tile_passability[12 * check_y + check_x] & next_state;
 
     // Transition state accordingly
     if (canMove)
@@ -175,7 +175,7 @@ UnitState finish_moving_towards(
     // Check if we could go back to the tile we came from
     uint8_t check_x = (x + 1) - dx;
     uint8_t check_y = (y + 1) - dy;
-    bool couldMove = ruins_TILE_PASSABILITY[12 * check_y + check_x] & from_state;
+    bool couldMove = map_data.tile_passability[12 * check_y + check_x] & from_state;
 
     // If not, then we might have jumped from a cliff or sth. Blink accordingly.
     if (couldMove)
