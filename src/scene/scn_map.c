@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "scn_map.h"
-#include "../dude.h"
+#include "../game/unit.h"
 #include "../ui.h"
 #include "../../res/ruins.h"
 
@@ -22,9 +22,9 @@ const scene_desc scn_map = {
 // Scene state
 // -----------
 
-dude_spr dude = {
+unit_spr unit = {
     {.frame = 0, .anim = 0, .flipX = false, .x = 112, .y = 32},
-    DUDE_WAITING
+    UNIT_WAITING
 };
 
 // --------
@@ -48,7 +48,7 @@ void scn_map_init(void)
     // Load background attributes and map
     VBK_REG = VBK_ATTRIBUTES;
     set_bkg_tiles(0, 0, ruins_MAP_ATTRIBUTES_WIDTH, ruins_MAP_ATTRIBUTES_HEIGHT, ruins_map_attributes);
-    set_bkg_tile_xy(6, 1, ruins_map_attributes[26] | S_PRIORITY); // Make dude appear behind reservoir
+    set_bkg_tile_xy(6, 1, ruins_map_attributes[26] | S_PRIORITY); // Make unit appear behind reservoir
     set_bkg_tile_xy(7, 1, ruins_map_attributes[27] | S_PRIORITY); // which exist on these 2 positions on the map
     VBK_REG = VBK_TILES;
     set_bkg_tiles(0, 0, ruins_MAP_ATTRIBUTES_WIDTH, ruins_MAP_ATTRIBUTES_HEIGHT, ruins_map);
@@ -57,7 +57,7 @@ void scn_map_init(void)
     SHOW_BKG;
 
     // Load unit sprite
-    dude_load_gfx();
+    unit_load_gfx();
     static const palette_color_t black_palette[] = {RGB8(0, 0, 0), RGB8(159, 159, 159), RGB8(255, 0, 0), RGB8(0, 0, 0)};
     set_sprite_palette(1, 1, black_palette);
     SPRITES_8x8;
@@ -76,24 +76,24 @@ void scn_map_init(void)
 
 void scn_map_process(void)
 {
-    // Dude
-    dude_update(&dude);
-    dude_draw(&dude);
+    // Unit
+    unit_update(&unit);
+    unit_draw(&unit);
     
-    if (cursor_on_dude && a_just_pressed) {
-        dude_enqueue(CMD_GO_UP);
-        dude_enqueue(CMD_GO_RIGHT);
-        dude_enqueue(CMD_GO_LEFT);
-        dude_enqueue(CMD_GO_LEFT);
-        dude_enqueue(CMD_GO_DOWN);
-        dude_enqueue(CMD_GO_RIGHT);
-        dude_enqueue(CMD_GO_DOWN);
+    if (cursor_on_unit && a_just_pressed) {
+        unit_enqueue(CMD_GO_UP);
+        unit_enqueue(CMD_GO_RIGHT);
+        unit_enqueue(CMD_GO_LEFT);
+        unit_enqueue(CMD_GO_LEFT);
+        unit_enqueue(CMD_GO_DOWN);
+        unit_enqueue(CMD_GO_RIGHT);
+        unit_enqueue(CMD_GO_DOWN);
     }
     
-    if (b_pressed && up_just_pressed)    dude_enqueue(CMD_GO_UP);
-    if (b_pressed && down_just_pressed)  dude_enqueue(CMD_GO_DOWN);
-    if (b_pressed && left_just_pressed)  dude_enqueue(CMD_GO_LEFT);
-    if (b_pressed && right_just_pressed) dude_enqueue(CMD_GO_RIGHT);
+    if (b_pressed && up_just_pressed)    unit_enqueue(CMD_GO_UP);
+    if (b_pressed && down_just_pressed)  unit_enqueue(CMD_GO_DOWN);
+    if (b_pressed && left_just_pressed)  unit_enqueue(CMD_GO_LEFT);
+    if (b_pressed && right_just_pressed) unit_enqueue(CMD_GO_RIGHT);
 
     // Cursor
     cursor_update();

@@ -34,9 +34,10 @@ endif
 
 SRCDIR      = src
 SCNDIR     := ${SRCDIR}/scene
+GAMEDIR    := ${SRCDIR}/game
 # ENTITIESDIR := ${SRCDIR}/entities, for example
 # ...
-CDIRS      := ${SRCDIR} ${SCNDIR}
+CDIRS      := ${SRCDIR} ${SCNDIR} ${GAMEDIR}
 
 OBJDIR      = obj
 RESDIR      = res

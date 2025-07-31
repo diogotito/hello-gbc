@@ -1,7 +1,7 @@
 /**
  * PARTIAL #included from scn_map.c
  * Uses:
- *   dude_spr dude
+ *   unit_spr unit
  */
 
 #include <string.h>
@@ -46,7 +46,7 @@ const palette_color_t stroke_anim_values[32] = {
 };
 
 static uint8_t cursor_x, cursor_y, cursor_cur_palette;
-static bool cursor_on_dude;
+static bool cursor_on_unit;
 
 static inline void cursor_load_gfx()
 {
@@ -79,16 +79,16 @@ static inline void cursor_update()
         cursor_y += 1;
     }
 
-    cursor_on_dude = dude.cur_state == DUDE_WAITING &&
-        cursor_x == dude.spr.x / 16 &&
-        cursor_y == dude.spr.y / 16;
+    cursor_on_unit = unit.cur_state == UNIT_WAITING &&
+        cursor_x == unit.spr.x / 16 &&
+        cursor_y == unit.spr.y / 16;
 }
 
 static inline void cursor_draw()
 {
     // Update OBJs
     move_metasprite_ex(cursor_metasprites[(sys_time >> 2) % 3], cursor_TILE_ORIGIN,
-                       S_PAL(2 + cursor_on_dude), 0,
+                       S_PAL(2 + cursor_on_unit), 0,
                        cursor_x * 16 + 8, cursor_y * 16 + 16);
     
     // Animate palette
@@ -98,12 +98,12 @@ static inline void cursor_draw()
     set_win_tile_xy(6, 1, '0' + cursor_x);
     set_win_tile_xy(8, 1, '0' + cursor_y);
 
-    char dude_xy_str[8];
-    sprintf(dude_xy_str, "%03d,%03d", dude.spr.x, dude.spr.y);
+    char unit_xy_str[8];
+    sprintf(unit_xy_str, "%03d,%03d", unit.spr.x, unit.spr.y);
     ui_put_text(6, 2, "       ");
-    set_win_tiles(6, 2, strlen(dude_xy_str), 1, dude_xy_str);
+    set_win_tiles(6, 2, strlen(unit_xy_str), 1, unit_xy_str);
 
-        if (cursor_on_dude) {
+        if (cursor_on_unit) {
         ui_put_text(11, 1, "PRESS A!");
     } else {
         ui_put_text(11, 1, "        ");
