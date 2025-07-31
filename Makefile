@@ -1,16 +1,19 @@
 #
-# A Makefile that compiles all .c and .s files in "src" and "res" 
+# A Makefile that compiles all .c and .s files in "src", "src/scene" and "res" 
 # subdirectories and places the output in a "obj" subdirectory
 #
+include common.mk
+LCC = ${GBDK_BINS}lcc
 
-.SUFFIXES:
-.PHONY: all prepare assets check_for_new_OBJS_prerequisites clean
+# ----------------
+# Project metadata
+# ----------------
 
-ifdef GBDK_HOME
-	GBDK_BINS = $(GBDK_HOME)/bin/
-endif
+PROJECTNAME = Dark-SciFi-TRPG
 
-LCC = $(GBDK_BINS)lcc
+# --------------
+# Compiler flags
+# --------------
 
 # C23 standard
 LCCFLAGS += -Wf--std-c23
@@ -25,56 +28,57 @@ else
 	LCCFLAGS += -Wf--max-allocs-per-node50000
 endif
 
-# You can set the name of the .gb ROM file here
-PROJECTNAME    = Example
+# -----------
+# Directories
+# -----------
 
 SRCDIR      = src
-SCNDIR     := $(SRCDIR)/scene
-# ENTITIESDIR := $(SRCDIR)/entities, for example
+SCNDIR     := ${SRCDIR}/scene
+# ENTITIESDIR := ${SRCDIR}/entities, for example
 # ...
-CDIRS      := $(SRCDIR) $(SCNDIR)
+CDIRS      := ${SRCDIR} ${SCNDIR}
 
 OBJDIR      = obj
 RESDIR      = res
-BINS	    = $(OBJDIR)/$(PROJECTNAME).gb
 
-PARTIALS    = $(foreach dir,$(CDIRS) $(RESDIR),$(wildcard $(dir)/*__*__.c))
-CSOURCES    = $(notdir $(filter-out $(PARTIALS),\
-                $(foreach dir,$(CDIRS),$(wildcard $(dir)/*.c))\
-				$(foreach dir,$(RESDIR),$(wildcard $(dir)/*.c))))
-ASMSOURCES  = $(foreach dir,$(CDIRS),$(notdir $(wildcard $(dir)/*.s)))
-OBJS        = $(CSOURCES:%.c=$(OBJDIR)/%.o) $(ASMSOURCES:%.s=$(OBJDIR)/%.o)
+# ---------------------------------------
+# Variables for targets and prerequisites
+# ---------------------------------------
 
-ifeq ($(MAKELEVEL),0)
-$(info PARTIALS = $(PARTIALS))
-$(info CSOURCES = $(CSOURCES))
-$(info OBJS     = $(OBJS))
+BINS	    = ${OBJDIR}/${PROJECTNAME}.gb
+
+PARTIALS    = $(foreach dir,${CDIRS} ${RESDIR},$(wildcard ${dir}/*__*__.c))
+CSOURCES    = $(notdir $(filter-out ${PARTIALS},\
+                $(foreach dir,${CDIRS},$(wildcard ${dir}/*.c))\
+				$(foreach dir,${RESDIR},$(wildcard ${dir}/*.c))))
+ASMSOURCES  = $(foreach dir,${CDIRS},$(notdir $(wildcard ${dir}/*.s)))
+OBJS        = $(CSOURCES:%.c=${OBJDIR}/%.o) $(ASMSOURCES:%.s=${OBJDIR}/%.o)
+
+ifeq (${MAKELEVEL},0)
+$(info PARTIALS = ${PARTIALS})
+$(info CSOURCES = ${CSOURCES})
+$(info OBJS     = ${OBJS})
 endif
 
+# -------
+# Targets
+# -------
+
+# HACK: see check_for_new_OBJS_prerequisites
 all:    initial_OBJS := ${OBJS}
-all:	prepare assets check_for_new_OBJS_prerequisites $(BINS)
-
-compile.bat: Makefile
-	@echo "REM Automatically generated from Makefile" > compile.bat
-	@make -sn | sed s,$(GBDK_BINS),C:/tools/gbdk/, | sed y/\\//\\\\/ | sed s/mkdir\ -p\/mkdir\/ | grep -v make >> compile.bat
-
+all:	prepare assets check_for_new_OBJS_prerequisites ${BINS}
 
 # Canned recipe shared by all C compilation rules
 define compile-c =
-$(LCC) $(LCCFLAGS) -c -o $@ $< \
+${LCC} ${LCCFLAGS} -c -o $@ $< \
 $(if $(filter-out undefined,$(origin SHUT_UP_EVELYN)),| sed /EVELYN/d)
 endef
 
-define newline =
-
-
-endef
-
 # Compile .c files in "src/", "src/scene/" and "res/ to .o object files
-# by dynamically generating rules like these for each word in $(CDIRS):
-# $(OBJDIR)/%.o:	src/somewhere_in_CDIRS/%.c ; $(compile-c)
-$(eval $(foreach CDIR,$(CDIRS),$(newline)$\
-$$(OBJDIR)/%.o: $(CDIR)/%.c ; $$(compile-c)))
+# by dynamically generating rules like these for each word in ${CDIRS}:
+# ${OBJDIR}/%.o:	src/somewhere_in_CDIRS/%.c ; ${compile-c}
+$(eval $(foreach CDIR,${CDIRS},${newline}$\
+$${OBJDIR}/%.o: ${CDIR}/%.c ; $${compile-c}))
 
 # Add each __partial__.c file to the list of prerequisites of its parent's
 # .o object file
@@ -82,46 +86,55 @@ $(eval $(foreach partial,${PARTIALS},$\
          $(let basename,$(notdir $(firstword $(subst __, ,${partial}))),$\
 		 ${OBJDIR}/${basename}.o: ${partial}${newline})))
 
-$(OBJDIR)/%.o:	$(RESDIR)/%.c ; $(compile-c)
+${OBJDIR}/%.o:	${RESDIR}/%.c ; ${compile-c}
 
 # Compile .s assembly files in "src/" to .o object files
-$(OBJDIR)/%.o:	$(SRCDIR)/%.s
-	$(LCC) $(LCCFLAGS) -c -o $@ $<
+${OBJDIR}/%.o:	${SRCDIR}/%.s
+	${LCC} ${LCCFLAGS} -c -o $@ $<
 
 # If needed, compile .c files in "src/" to .s assembly files
 # (not required if .c is compiled directly to .o)
-$(OBJDIR)/%.s:	$(SRCDIR)/%.c
-	$(LCC) $(LCCFLAGS) -S -o $@ $<
+${OBJDIR}/%.s:	${SRCDIR}/%.c
+	${LCC} ${LCCFLAGS} -S -o $@ $<
 
 # Link the compiled object files into a .gb ROM file
-$(BINS):	$(OBJS)
-	$(LCC) $(LCCFLAGS) -o $(BINS) $(OBJS)
+${BINS}:	${OBJS}
+	${LCC} ${LCCFLAGS} -o ${BINS} ${OBJS}
 
-
-#-------
-# Tasks
-#-------
-
-on_windows = $(findstring Windows_NT,$(OS))
+# --------------------
+# Tasks and misc files
+# --------------------
 
 prepare:
-	-$(if $(on_windows),MD $(OBJDIR) 2>NUL || EXIT /B 0,$\
-	                    mkdir -p $(OBJDIR))
+	-${MKDIR} ${OBJDIR}
 
 assets:
 	@echo ----- ASSETS -----
-	$(MAKE) -C res
+	${MAKE} -C res
 	@echo ------------------
 
+# HACK: When rebuilding from scratch, ${CSOURCES} won't know about the C files
+# generated by png2asset under "res", so Make doesn't compile them
+# automatically out of the box because the ${BINS} rule won't depend on them.
+# Here we store the first expansion of ${OBJS}, which are the object files
+# that Make will compile in this invocation.
+# Later, check_for_new_OBJS_prerequisites will expand ${OBJS} again, and if it
+# new objet files appear on it it will invoke ${MAKE} to compile them, so that
+# ${BINS} target is built first time without having to manually rerun `make`.
 check_for_new_OBJS_prerequisites:
 	$(eval new_OBJS := $(filter-out ${initial_OBJS},${OBJS}))
 	$(if ${new_OBJS},$\
-	    $(info There are new OBJS to compile!)$\
-		$(MAKE) --no-print-directory ${new_OBJS}${newline}$\
+	    $(info There are new OBJS to compile: ${new_OBJS})$\
+		${MAKE} --no-print-directory ${new_OBJS}${newline}$\
 		@echo ++++++++++++++++++)
 
 clean:
-#	rm -f  *.gb *.ihx *.cdb *.adb *.noi *.map
-	-$(if $(on_windows),DEL /S/Q/F $(OBJDIR),$\
-	                     rm -f $(OBJDIR)/*.*)
-	-@$(MAKE) -C res clean
+	$(info RM expands to ${RM})
+	${RM} ${OBJDIR}
+	-@${MAKE} -C res clean
+
+compile.bat: Makefile
+	@echo "REM Automatically generated from Makefile" > compile.bat
+	@make -sn | sed s,${GBDK_BINS},C:/tools/gbdk/, | sed y/\\//\\\\/ | sed s/mkdir\ -p\/mkdir\/ | grep -v make >> compile.bat
+
+.PHONY: all prepare assets check_for_new_OBJS_prerequisites clean

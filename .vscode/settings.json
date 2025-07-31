@@ -17,7 +17,7 @@
         "*.png": "${capture}.c, ${capture}.h",
         "*.asm": "${capture}.lst, ${capture}.rst, ${capture}.sym, ${capture}.adb, ${capture}.o",
         "*.gb": "${capture}.map, ${capture}.noi, ${capture}.cdb, ${capture}.ihx",
-        "Makefile": "*.ps1, *.bat",
+        "Makefile": "*.ps1, *.bat, *.mk",
         "*.c": "${capture}.h, ${capture}__*.c"
     },
     "workbench.editor.customLabels.patterns": {
