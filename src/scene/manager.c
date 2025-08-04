@@ -12,13 +12,21 @@ bool returning = false;
 scene_desc *calling = nullptr;
 
 /**
+ * Call this once before scene_process ever gets called
+ */
+void scene_first(scene_desc *first_scene) {
+    cur_scene_index = 0;
+    scene_stack[0] = *first_scene;
+    scene_stack[0].init_fn();
+}
+
+/**
  * Call this every frame from main()
  */
 void scene_process()
 {
-    if (cur_scene_index >= 0) {
-        scene_stack[cur_scene_index].process_fn();
-    }
+    // Assumes `scene_first` was called once
+    scene_stack[cur_scene_index].process_fn();
     
     // Perform pending return and call, if any
     if (returning) {

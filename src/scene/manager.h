@@ -8,6 +8,7 @@ typedef struct scene_desc {
     char id[6];
 } scene_desc;
 
+void scene_first(scene_desc*);
 void scene_process();
 void scene_call(scene_desc*);
 void scene_return();

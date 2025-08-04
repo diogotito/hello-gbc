@@ -12,7 +12,7 @@
 
 void main(void)
 {
-	scene_call(&scn_title);
+	scene_first(&scn_title);
 
     while(1) {
         input_refresh();

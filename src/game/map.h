@@ -19,19 +19,13 @@ typedef struct map_gfx {
     uint8_t *palettes;
 } map_gfx_t;
 
-typedef struct map_desc {
+typedef struct map {
     uint8_t width;
     uint8_t height;
     map_gfx_t gfx;
     uint8_t *tiles_with_priority;
     uint8_t *tile_passability;
 } map_desc_t;
-
-typedef struct map_state {
-    uint8_t unit_count;
-    unit_spr units[MAP_MAX_UNITS];
-    uint8_t occupancy[18 * 20]; // HARDCODED for a map the size of the screen
-} map_state_t;
 
 #define MAP_DESC(name) map_desc_t name##_map_desc = {                         \
                            .width = name##_MAP_ATTRIBUTES_WIDTH,              \
@@ -49,10 +43,9 @@ typedef struct map_state {
                            .tile_passability = name##_tile_passability,       \
 }
 
-extern map_desc_t map_data;
-extern map_state_t map;
+extern map_desc_t map;
 
-void map_init();
+void map_init(map_desc_t*);
 void map_load_gfx();
 
 #endif

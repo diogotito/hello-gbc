@@ -75,13 +75,13 @@ UnitState unit_process_next_command(unit_spr *unit)
     switch (unit_dequeue(unit->id))
     {
     case CMD_GO_RIGHT:
-        return start_moving_towards(unit, J_RIGHT, 1, 0);
+        return start_moving_towards(unit, UNIT_MOVING_RIGHT, 1, 0);
     case CMD_GO_LEFT:
-        return start_moving_towards(unit, J_LEFT, -1, 0);
+        return start_moving_towards(unit, UNIT_MOVING_LEFT, -1, 0);
     case CMD_GO_UP:
-        return start_moving_towards(unit, J_UP, 0, -1);
+        return start_moving_towards(unit, UNIT_MOVING_UP, 0, -1);
     case CMD_GO_DOWN:
-        return start_moving_towards(unit, J_DOWN, 0, 1);
+        return start_moving_towards(unit, UNIT_MOVING_DOWN, 0, 1);
     default:
         return UNIT_WAITING;
     }
@@ -100,22 +100,22 @@ UnitState unit_handle_movement(unit_spr *unit)
         unit->spr.x += unit_speed;
         unit->spr.frame += 4;
         return (unit->spr.x % dude_sheet_WIDTH) ? UNIT_MOVING_RIGHT
-                                                : finish_moving_towards(unit, J_RIGHT, 1, 0);
+                                                : finish_moving_towards(unit, UNIT_MOVING_RIGHT, 1, 0);
     case UNIT_MOVING_LEFT:
         unit->spr.x -= unit_speed;
         unit->spr.frame += 4;
         return (unit->spr.x % dude_sheet_WIDTH) ? UNIT_MOVING_LEFT
-                                                : finish_moving_towards(unit, J_LEFT, -1, 0);
+                                                : finish_moving_towards(unit, UNIT_MOVING_LEFT, -1, 0);
     case UNIT_MOVING_UP:
         unit->spr.y -= unit_speed;
         unit->spr.frame += 4;
         return (unit->spr.y % dude_sheet_HEIGHT) ? UNIT_MOVING_UP
-                                                 : finish_moving_towards(unit, J_UP, 0, -1);
+                                                 : finish_moving_towards(unit, UNIT_MOVING_UP, 0, -1);
     case UNIT_MOVING_DOWN:
         unit->spr.y += unit_speed;
         unit->spr.frame += 4;
         return (unit->spr.y % dude_sheet_HEIGHT) ? UNIT_MOVING_DOWN
-                                                 : finish_moving_towards(unit, J_DOWN, 0, 1);
+                                                 : finish_moving_towards(unit, UNIT_MOVING_DOWN, 0, 1);
     case UNIT_BLINKING:
         --unit->spr.blinking_countdown;
         uint8_t palette = unit->spr.blinking_countdown % 4 > 1;
@@ -154,7 +154,7 @@ UnitState start_moving_towards(
     // Check if next tile is passable
     uint8_t check_x = (x + 1) + dx;
     uint8_t check_y = (y + 1) + dy;
-    bool canMove = map_data.tile_passability[12 * check_y + check_x] & next_state;
+    bool canMove = map.tile_passability[12 * check_y + check_x] & next_state;
 
     // Transition state accordingly
     if (canMove)
@@ -179,7 +179,7 @@ UnitState finish_moving_towards(
     // Check if we could go back to the tile we came from
     uint8_t check_x = (x + 1) - dx;
     uint8_t check_y = (y + 1) - dy;
-    bool couldMove = map_data.tile_passability[12 * check_y + check_x] & from_state;
+    bool couldMove = map.tile_passability[12 * check_y + check_x] & from_state;
 
     // If not, then we might have jumped from a cliff or sth. Blink accordingly.
     if (couldMove)

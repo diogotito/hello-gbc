@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "scn_map.h"
+#include "../../res/ruins__map_desc.h"
 #include "../game/unit.h"
 #include "../game/map.h"
 #include "../ui.h"
@@ -40,7 +41,8 @@ unit_spr unit_sprites[MAX_UNITS_IN_MAP] = {
 
 void scn_map_init(void)
 {
-    map_init();
+    // Load the "ruins" map
+    map_init(&ruins_map_desc);
     map_load_gfx();
 
     // Turn the background map on to make it visible
