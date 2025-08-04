@@ -14,22 +14,27 @@ struct {
     UnitCommands queue[MAX_COMMANDS];
     uint8_t back;
     uint8_t front;
-} unit_cmds = { {CMD_NOOP}, 0, 0 };
+} unit_cmds[MAX_UNITS_IN_MAP];
 
-void unit_enqueue(UnitCommands cmd) {
-    if ((unit_cmds.back + 1) % MAX_COMMANDS == unit_cmds.front) {
-        return;
-    }
-    unit_cmds.queue[unit_cmds.back] = cmd;
-    unit_cmds.back = (unit_cmds.back + 1) % MAX_COMMANDS;
+void unit_init_queue(UnitID id) {
+    unit_cmds[id].back = unit_cmds[id].front = 0;
+    unit_cmds[id].queue[0] = CMD_NOOP;
 }
 
-UnitCommands unit_dequeue() {
-    if (unit_cmds.front == unit_cmds.back) {
+void unit_enqueue(UnitID id, UnitCommands cmd) {
+    if ((unit_cmds[id].back + 1) % MAX_COMMANDS == unit_cmds[id].front) {
+        return;
+    }
+    unit_cmds[id].queue[unit_cmds[id].back] = cmd;
+    unit_cmds[id].back = (unit_cmds[id].back + 1) % MAX_COMMANDS;
+}
+
+UnitCommands unit_dequeue(UnitID id) {
+    if (unit_cmds[id].front == unit_cmds[id].back) {
         return CMD_NOOP;
     }
-    UnitCommands cmd = unit_cmds.queue[unit_cmds.front];
-    unit_cmds.front = (unit_cmds.front + 1) % MAX_COMMANDS;
+    UnitCommands cmd = unit_cmds[id].queue[unit_cmds[id].front];
+    unit_cmds[id].front = (unit_cmds[id].front + 1) % MAX_COMMANDS;
     return cmd;
 }
 
@@ -40,35 +45,34 @@ UnitCommands unit_dequeue() {
 void unit_load_gfx() {
     set_sprite_data(dude_sheet_TILE_ORIGIN, dude_sheet_TILE_COUNT, dude_sheet_tiles);
     set_sprite_palette(0, dude_sheet_PALETTE_COUNT, dude_sheet_palettes);
-
 }
 
-void unit_update(unit_spr *unit)
+void unit_spr_update(unit_spr *unit)
 {
     unit->cur_state = unit_handle_movement(unit);
 }
 
-void unit_draw(unit_spr *unit)
+void unit_spr_draw(unit_spr *unit)
 {
     if (unit->spr.flipX)
     {
         move_metasprite_flipx(
             dude_sheet_metasprites[unit->spr.anim + ((unit->spr.frame & 0x20) >> 5)],
-            dude_sheet_TILE_ORIGIN, unit->spr.props, /* base tile */ 10,
+            dude_sheet_TILE_ORIGIN, unit->spr.props, /* OBJ */ 8 + 4 * unit->id,
             unit->spr.x + dude_sheet_WIDTH + 8, unit->spr.y + 16);
     }
     else
     {
         move_metasprite_ex(
             dude_sheet_metasprites[unit->spr.anim + ((unit->spr.frame & 0x20) >> 5)],
-            dude_sheet_TILE_ORIGIN, unit->spr.props, /* base tile */ 10,
+            dude_sheet_TILE_ORIGIN, unit->spr.props, /* OBJ */ 8 + 4 * unit->id,
             unit->spr.x + 8, unit->spr.y + 16);
     }
 }
 
 UnitState unit_process_next_command(unit_spr *unit)
 {
-    switch (unit_dequeue())
+    switch (unit_dequeue(unit->id))
     {
     case CMD_GO_RIGHT:
         return start_moving_towards(unit, J_RIGHT, 1, 0);

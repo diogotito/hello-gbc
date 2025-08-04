@@ -22,9 +22,10 @@ const scene_desc scn_map = {
 // Scene state
 // -----------
 
-unit_spr unit = {
-    {.frame = 0, .anim = 0, .flipX = false, .x = 112, .y = 32},
-    UNIT_WAITING
+uint8_t unit_sprites_count = 2;
+unit_spr unit_sprites[MAX_UNITS_IN_MAP] = {
+    {{.frame = 0, .anim = 0, .flipX = false, .x = 112, .y = 32}, UNIT_WAITING, 0},
+    {{.frame = 0, .anim = 0, .flipX = false, .x =  64, .y = 64}, UNIT_WAITING, 1},
 };
 
 // --------
@@ -61,28 +62,36 @@ void scn_map_init(void)
     ui_put_text(1, 1, "CUR@( , )");
     ui_put_text(1, 2, "GUY@(   ,   )");
     ui_show_window_top();
+
+    // Init unit command queues
+    for (uint8_t i = 0; i < unit_sprites_count; i++) {
+        unit_init_queue(unit_sprites[i].id);
+    }
+    
 }
 
 void scn_map_process(void)
 {
     // Unit
-    unit_update(&unit);
-    unit_draw(&unit);
-    
-    if (cursor_on_unit && a_just_pressed) {
-        unit_enqueue(CMD_GO_UP);
-        unit_enqueue(CMD_GO_RIGHT);
-        unit_enqueue(CMD_GO_LEFT);
-        unit_enqueue(CMD_GO_LEFT);
-        unit_enqueue(CMD_GO_DOWN);
-        unit_enqueue(CMD_GO_RIGHT);
-        unit_enqueue(CMD_GO_DOWN);
+    for (size_t i = 0; i < unit_sprites_count; i++) {
+        unit_spr_update(&unit_sprites[i]);
+        unit_spr_draw(&unit_sprites[i]);
+
+        if (cursor_on_unit[i] && a_just_pressed) {
+            unit_enqueue(i, CMD_GO_UP);
+            unit_enqueue(i, CMD_GO_RIGHT);
+            unit_enqueue(i, CMD_GO_LEFT);
+            unit_enqueue(i, CMD_GO_LEFT);
+            unit_enqueue(i, CMD_GO_DOWN);
+            unit_enqueue(i, CMD_GO_RIGHT);
+            unit_enqueue(i, CMD_GO_DOWN);
+        }
+        
+        if (b_pressed && up_just_pressed)    unit_enqueue(i, CMD_GO_UP);
+        if (b_pressed && down_just_pressed)  unit_enqueue(i, CMD_GO_DOWN);
+        if (b_pressed && left_just_pressed)  unit_enqueue(i, CMD_GO_LEFT);
+        if (b_pressed && right_just_pressed) unit_enqueue(i, CMD_GO_RIGHT);
     }
-    
-    if (b_pressed && up_just_pressed)    unit_enqueue(CMD_GO_UP);
-    if (b_pressed && down_just_pressed)  unit_enqueue(CMD_GO_DOWN);
-    if (b_pressed && left_just_pressed)  unit_enqueue(CMD_GO_LEFT);
-    if (b_pressed && right_just_pressed) unit_enqueue(CMD_GO_RIGHT);
 
     // Cursor
     cursor_update();

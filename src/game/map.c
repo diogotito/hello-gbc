@@ -36,6 +36,8 @@ void map_load_gfx() {
     );
 
     // Set priority bits in attributes
+    // TODO think of a way of setting tile priorities through a tool like
+    // Aseprite or Tiled or YAML files + some Python script for codegen.
     for (uint8_t i = 0; map_data.tiles_with_priority[i] != MPRI_END; i += 2) {
         uint8_t x = map_data.tiles_with_priority[i];
         uint8_t y = map_data.tiles_with_priority[i + 1];

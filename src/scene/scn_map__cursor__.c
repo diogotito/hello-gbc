@@ -46,7 +46,8 @@ const palette_color_t stroke_anim_values[32] = {
 };
 
 static uint8_t cursor_x, cursor_y, cursor_cur_palette;
-static bool cursor_on_unit;
+static bool cursor_on_any_unit;
+static bool cursor_on_unit[MAX_UNITS_IN_MAP];
 
 static inline void cursor_load_gfx()
 {
@@ -79,16 +80,21 @@ static inline void cursor_update()
         cursor_y += 1;
     }
 
-    cursor_on_unit = unit.cur_state == UNIT_WAITING &&
-        cursor_x == unit.spr.x / 16 &&
-        cursor_y == unit.spr.y / 16;
+    cursor_on_any_unit = false;
+    for (uint8_t i = 0; i < unit_sprites_count; i++) {
+        cursor_on_unit[i] = unit_sprites[i].cur_state == UNIT_WAITING &&
+            cursor_x == unit_sprites[i].spr.x / 16 &&
+            cursor_y == unit_sprites[i].spr.y / 16;
+        cursor_on_any_unit = cursor_on_any_unit || cursor_on_unit[i];
+    }
+    
 }
 
 static inline void cursor_draw()
 {
     // Update OBJs
     move_metasprite_ex(cursor_metasprites[(sys_time >> 2) % 3], cursor_TILE_ORIGIN,
-                       S_PAL(2 + cursor_on_unit), 0,
+                       S_PAL(2 + cursor_on_any_unit), 0,
                        cursor_x * 16 + 8, cursor_y * 16 + 16);
     
     // Animate palette
@@ -99,11 +105,11 @@ static inline void cursor_draw()
     set_win_tile_xy(8, 1, '0' + cursor_y);
 
     char unit_xy_str[8];
-    sprintf(unit_xy_str, "%03d,%03d", unit.spr.x, unit.spr.y);
+    sprintf(unit_xy_str, "%03d,%03d", unit_sprites[0].spr.x, unit_sprites[0].spr.y);
     ui_put_text(6, 2, "       ");
     set_win_tiles(6, 2, strlen(unit_xy_str), 1, unit_xy_str);
 
-        if (cursor_on_unit) {
+    if (cursor_on_any_unit) {
         ui_put_text(11, 1, "PRESS A!");
     } else {
         ui_put_text(11, 1, "        ");

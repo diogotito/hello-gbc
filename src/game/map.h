@@ -30,7 +30,7 @@ typedef struct map_desc {
 typedef struct map_state {
     uint8_t unit_count;
     unit_spr units[MAP_MAX_UNITS];
-    uint8_t occupancy[18 * 20]; // hardcoded for a map the size of the screen
+    uint8_t occupancy[18 * 20]; // HARDCODED for a map the size of the screen
 } map_state_t;
 
 #define MAP_DESC(name) map_desc_t name##_map_desc = {                         \

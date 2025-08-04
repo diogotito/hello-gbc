@@ -9,6 +9,8 @@
 #include <gb/gb.h>
 #include "../my_sprites.h"
 
+#define MAX_UNITS_IN_MAP 8
+
 typedef uint8_t UnitID;
 
 typedef enum UnitState {
@@ -28,8 +30,9 @@ typedef enum UnitCommands {
     CMD_GO_DOWN = UNIT_MOVING_DOWN,
 } UnitCommands;
 
-void unit_enqueue(UnitCommands cmd);
-UnitCommands unit_dequeue();
+void unit_init_queue(UnitID);
+void unit_enqueue(UnitID, UnitCommands);
+UnitCommands unit_dequeue(UnitID);
 
 typedef struct unit_spr {
     my_metasprite_t spr;
@@ -38,8 +41,8 @@ typedef struct unit_spr {
 } unit_spr;
 
 void unit_load_gfx();
-void unit_update(unit_spr *unit);
-void unit_draw(unit_spr *unit);
+void unit_spr_update(unit_spr *unit);
+void unit_spr_draw(unit_spr *unit);
 
 UnitState unit_handle_movement(unit_spr *unit);
 
