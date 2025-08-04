@@ -77,7 +77,7 @@ void scn_map_process(void)
         unit_spr_update(&unit_sprites[i]);
         unit_spr_draw(&unit_sprites[i]);
 
-        if (cursor_on_unit[i] && a_just_pressed) {
+        if (cursor_on_unit == i && a_just_pressed) {
             unit_enqueue(i, CMD_GO_UP);
             unit_enqueue(i, CMD_GO_RIGHT);
             unit_enqueue(i, CMD_GO_LEFT);
