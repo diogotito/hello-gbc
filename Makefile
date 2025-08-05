@@ -46,7 +46,7 @@ RESDIR      = res
 # Variables for targets and prerequisites
 # ---------------------------------------
 
-BINS	    = ${OBJDIR}/${PROJECTNAME}.gb
+BINS	    = ${OBJDIR}/${PROJECTNAME}.gbc
 
 PARTIALS    = $(foreach dir,${CDIRS} ${RESDIR},$(wildcard ${dir}/*__*__.c))
 CSOURCES    = $(notdir $(filter-out ${PARTIALS},\

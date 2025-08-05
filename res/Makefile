@@ -16,18 +16,24 @@ OUTPUT_C_FILES := $(foreach png,$(wildcard *.png),${png:.png=.h} ${png:.png=.c})
 all: ${OUTPUT_C_FILES}
 
 # Tilesets:
+
 ui_tiles.h ui_tiles.c &: ui_tiles.png
 	${PNG2ASSET} $< ${TILESET_FLAGS} -tile_origin 13
 
 # Screens and maps:
+
 title.h title.c &: title.png
 	${PNG2ASSET} $< ${MAP_FLAGS} -tile_origin 0
+
 ruins.h ruins.c &: ruins.png
 	${PNG2ASSET} $< ${MAP_FLAGS} -tile_origin 0 -max_palettes 6
+	
 
 # Sprites:
+
 dude-sheet.h dude-sheet.c &: dude-sheet.png
 	${PNG2ASSET} $< ${SPRITE_FLAGS} -tile_origin 80  -sw 16 -sh 16
+
 cursor.h cursor.c &: cursor.png
 	${PNG2ASSET} $< ${SPRITE_FLAGS} -tile_origin 100 -sw 16 -sh 16
 
