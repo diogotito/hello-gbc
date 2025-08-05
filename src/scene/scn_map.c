@@ -24,9 +24,11 @@ const scene_desc scn_map = {
 // -----------
 
 uint8_t unit_sprites_count = 2;
-unit_spr unit_sprites[MAX_UNITS_IN_MAP] = {
-    {{.frame = 0, .anim = 0, .flipX = false, .x = 112, .y = 32}, UNIT_WAITING, 0},
-    {{.frame = 0, .anim = 0, .flipX = false, .x =  64, .y = 64}, UNIT_WAITING, 1},
+unit_spr_t unit_sprites[MAX_UNITS_IN_MAP] = {
+    {.id = 0, .type = 0, .cur_state = UNIT_WAITING, .spr =
+        {.frame = 0, .anim = 0, .flipX = false, .x = 112, .y = 32}},
+    {.id = 1, .type = 0, .cur_state = UNIT_WAITING, .spr =
+        {.frame = 0, .anim = 0, .flipX = false, .x =  64, .y = 64}},
 };
 
 // --------
@@ -77,7 +79,7 @@ void scn_map_process(void)
     // Unit
     for (size_t i = 0; i < unit_sprites_count; i++) {
         unit_spr_update(&unit_sprites[i]);
-        unit_spr_draw(&unit_sprites[i]);
+        unit_spr_draw(i, &unit_sprites[i].spr);
 
         if (cursor_on_unit == i && a_just_pressed) {
             unit_enqueue(i, CMD_GO_UP);

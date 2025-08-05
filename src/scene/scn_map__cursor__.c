@@ -1,7 +1,7 @@
 /**
  * PARTIAL #included from scn_map.c
  * Uses:
- *   unit_spr unit
+ *   unit_spr_t unit
  */
 
 #include <string.h>

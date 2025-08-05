@@ -47,30 +47,30 @@ void unit_load_gfx() {
     set_sprite_palette(0, dude_sheet_PALETTE_COUNT, dude_sheet_palettes);
 }
 
-void unit_spr_update(unit_spr *unit)
+void unit_spr_update(unit_spr_t *unit)
 {
     unit->cur_state = unit_handle_movement(unit);
 }
 
-void unit_spr_draw(unit_spr *unit)
+void unit_spr_draw(UnitID unit_id, struct unit_metasprite_state *spr)
 {
-    if (unit->spr.flipX)
+    if (spr->flipX)
     {
         move_metasprite_flipx(
-            dude_sheet_metasprites[unit->spr.anim + ((unit->spr.frame & 0x20) >> 5)],
-            dude_sheet_TILE_ORIGIN, unit->spr.props, /* OBJ */ 8 + 4 * unit->id,
-            unit->spr.x + dude_sheet_WIDTH + 8, unit->spr.y + 16);
+            dude_sheet_metasprites[spr->anim + ((spr->frame & 0x20) >> 5)],
+            dude_sheet_TILE_ORIGIN, spr->props, 8 + 4 * unit_id,
+            spr->x + dude_sheet_WIDTH + 8, spr->y + 16);
     }
     else
     {
         move_metasprite_ex(
-            dude_sheet_metasprites[unit->spr.anim + ((unit->spr.frame & 0x20) >> 5)],
-            dude_sheet_TILE_ORIGIN, unit->spr.props, /* OBJ */ 8 + 4 * unit->id,
-            unit->spr.x + 8, unit->spr.y + 16);
+            dude_sheet_metasprites[spr->anim + ((spr->frame & 0x20) >> 5)],
+            dude_sheet_TILE_ORIGIN, spr->props, 8 + 4 * unit_id,
+            spr->x + 8, spr->y + 16);
     }
 }
 
-UnitState unit_process_next_command(unit_spr *unit)
+UnitState unit_process_next_command(unit_spr_t *unit)
 {
     switch (unit_dequeue(unit->id))
     {
@@ -87,7 +87,7 @@ UnitState unit_process_next_command(unit_spr *unit)
     }
 }
 
-UnitState unit_handle_movement(unit_spr *unit)
+UnitState unit_handle_movement(unit_spr_t *unit)
 {
     static int8_t unit_speed = 1;
 
@@ -126,7 +126,7 @@ UnitState unit_handle_movement(unit_spr *unit)
 }
 
 UnitState start_moving_towards(
-    unit_spr *unit,
+    unit_spr_t *unit,
     UnitState next_state, int8_t dx, int8_t dy)
 {
     // Pick unit flipX based on current and next state
@@ -169,7 +169,7 @@ UnitState start_moving_towards(
 }
 
 UnitState finish_moving_towards(
-    unit_spr *unit,
+    unit_spr_t *unit,
     UnitState from_state, int8_t dx, int8_t dy)
 {
     // Get unit position in passability map
