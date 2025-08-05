@@ -1,6 +1,5 @@
 #include <gb/gb.h>
 #include "unit.h"
-#include "../../res/dude-sheet.h"
 #include "../input.h"
 #include "map.h"
 
@@ -42,9 +41,10 @@ UnitCommands unit_dequeue(UnitID id) {
 // Lifecycle
 // ---------
 
-void unit_load_gfx() {
-    set_sprite_data(dude_sheet_TILE_ORIGIN, dude_sheet_TILE_COUNT, dude_sheet_tiles);
-    set_sprite_palette(0, dude_sheet_PALETTE_COUNT, dude_sheet_palettes);
+void unit_load_gfx(UnitType palette_origin, unit_gfx_desc_t *gfx)
+{
+    set_sprite_data(gfx->tile_imgs_origin, gfx->tile_imgs_count, gfx->tile_imgs);
+    set_sprite_palette(palette_origin, gfx->palettes_count, gfx->palettes);
 }
 
 void unit_spr_update(unit_spr_t *unit)
@@ -52,21 +52,21 @@ void unit_spr_update(unit_spr_t *unit)
     unit->cur_state = unit_handle_movement(unit);
 }
 
-void unit_spr_draw(UnitID unit_id, struct unit_metasprite_state *spr)
+void unit_spr_draw(unit_spr_t *unit)
 {
-    if (spr->flipX)
+    if (unit->spr.flipX)
     {
         move_metasprite_flipx(
-            dude_sheet_metasprites[spr->anim + ((spr->frame & 0x20) >> 5)],
-            dude_sheet_TILE_ORIGIN, spr->props, 8 + 4 * unit_id,
-            spr->x + dude_sheet_WIDTH + 8, spr->y + 16);
+            unit->gfx->metasprites[unit->spr.anim + ((unit->spr.frame & 0x20) >> 5)],
+            unit->gfx->tile_imgs_origin, unit->spr.props, 8 + 4 * unit->id,
+            unit->spr.x + unit->gfx->width + 8, unit->spr.y + 16);
     }
     else
     {
         move_metasprite_ex(
-            dude_sheet_metasprites[spr->anim + ((spr->frame & 0x20) >> 5)],
-            dude_sheet_TILE_ORIGIN, spr->props, 8 + 4 * unit_id,
-            spr->x + 8, spr->y + 16);
+            unit->gfx->metasprites[unit->spr.anim + ((unit->spr.frame & 0x20) >> 5)],
+            unit->gfx->tile_imgs_origin, unit->spr.props, 8 + 4 * unit->id,
+            unit->spr.x + 8, unit->spr.y + 16);
     }
 }
 
@@ -99,22 +99,22 @@ UnitState unit_handle_movement(unit_spr_t *unit)
     case UNIT_MOVING_RIGHT:
         unit->spr.x += unit_speed;
         unit->spr.frame += 4;
-        return (unit->spr.x % dude_sheet_WIDTH) ? UNIT_MOVING_RIGHT
+        return (unit->spr.x % unit->gfx->width) ? UNIT_MOVING_RIGHT
                                                 : finish_moving_towards(unit, UNIT_MOVING_RIGHT, 1, 0);
     case UNIT_MOVING_LEFT:
         unit->spr.x -= unit_speed;
         unit->spr.frame += 4;
-        return (unit->spr.x % dude_sheet_WIDTH) ? UNIT_MOVING_LEFT
+        return (unit->spr.x % unit->gfx->width) ? UNIT_MOVING_LEFT
                                                 : finish_moving_towards(unit, UNIT_MOVING_LEFT, -1, 0);
     case UNIT_MOVING_UP:
         unit->spr.y -= unit_speed;
         unit->spr.frame += 4;
-        return (unit->spr.y % dude_sheet_HEIGHT) ? UNIT_MOVING_UP
+        return (unit->spr.y % unit->gfx->height) ? UNIT_MOVING_UP
                                                  : finish_moving_towards(unit, UNIT_MOVING_UP, 0, -1);
     case UNIT_MOVING_DOWN:
         unit->spr.y += unit_speed;
         unit->spr.frame += 4;
-        return (unit->spr.y % dude_sheet_HEIGHT) ? UNIT_MOVING_DOWN
+        return (unit->spr.y % unit->gfx->height) ? UNIT_MOVING_DOWN
                                                  : finish_moving_towards(unit, UNIT_MOVING_DOWN, 0, 1);
     case UNIT_BLINKING:
         --unit->spr.blinking_countdown;

@@ -2,6 +2,7 @@
 #define __MAP_H
 
 #include <stdint.h>
+#include <gbdk/platform.h>
 #include "unit.h"
 
 #define MAP_PALETTE_ORIGIN 0
@@ -16,7 +17,7 @@ typedef struct map_gfx {
     uint8_t *tile_map;
     uint8_t *tile_attrs;
     uint8_t palettes_count;
-    uint8_t *palettes;
+    palette_color_t *palettes;
 } map_gfx_t;
 
 typedef struct map {

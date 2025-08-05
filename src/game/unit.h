@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <gbdk/platform.h>
+#include <gbdk/metasprites.h>
 
 #define MAX_UNITS_IN_MAP 8
 
@@ -34,10 +35,36 @@ void unit_init_queue(UnitID);
 void unit_enqueue(UnitID, UnitCommands);
 UnitCommands unit_dequeue(UnitID);
 
+typedef struct unit_gfx_desc {
+    // For loading to VRAM
+    uint16_t tile_imgs_count;
+    uint8_t tile_imgs_origin;
+    uint8_t *tile_imgs;
+    uint8_t palettes_count;
+    palette_color_t *palettes;
+
+    // For drawing
+    uint8_t width;
+    uint8_t height;
+    metasprite_t **metasprites;
+} unit_gfx_desc_t;
+
+#define UNIT_GFX_DESC(name) unit_gfx_desc_t name##_unit_gfx_desc = {    \
+                                .tile_imgs_count = name##_TILE_COUNT,   \
+                                .tile_imgs_origin = name##_TILE_ORIGIN, \
+                                .tile_imgs = name##_tiles,              \
+                                .palettes_count = name##_PALETTE_COUNT, \
+                                .palettes = name##_palettes,            \
+                                .width = name##_WIDTH,                  \
+                                .height = name##_HEIGHT,                \
+                                .metasprites = name##_metasprites,      \
+}
+
 typedef struct unit_spr {
     UnitID id;
     UnitType type;
     UnitState cur_state;
+    unit_gfx_desc_t* gfx;
     struct unit_metasprite_state {
         uint8_t frame;
         uint8_t anim;
@@ -49,9 +76,9 @@ typedef struct unit_spr {
     } spr;
 } unit_spr_t;
 
-void unit_load_gfx();
-void unit_spr_update(unit_spr_t*);
-void unit_spr_draw(UnitID, struct unit_metasprite_state*);
+void unit_load_gfx(UnitType, unit_gfx_desc_t *);
+void unit_spr_update(unit_spr_t *);
+void unit_spr_draw(unit_spr_t *);
 
 UnitState unit_handle_movement(unit_spr_t *unit);
 

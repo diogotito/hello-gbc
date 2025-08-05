@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "scn_map.h"
 #include "../../res/ruins__map_desc.h"
+#include "../../res/dude-sheet__unit_gfx_desc.h"
 #include "../game/unit.h"
 #include "../game/map.h"
 #include "../ui.h"
@@ -25,10 +26,8 @@ const scene_desc scn_map = {
 
 uint8_t unit_sprites_count = 2;
 unit_spr_t unit_sprites[MAX_UNITS_IN_MAP] = {
-    {.id = 0, .type = 0, .cur_state = UNIT_WAITING, .spr =
-        {.frame = 0, .anim = 0, .flipX = false, .x = 112, .y = 32}},
-    {.id = 1, .type = 0, .cur_state = UNIT_WAITING, .spr =
-        {.frame = 0, .anim = 0, .flipX = false, .x =  64, .y = 64}},
+    {.id = 0, .type = 0, .cur_state = UNIT_WAITING, .gfx = &dude_sheet_unit_gfx_desc, .spr = {.frame = 0, .anim = 0, .flipX = false, .x = 112, .y = 32}},
+    {.id = 1, .type = 0, .cur_state = UNIT_WAITING, .gfx = &dude_sheet_unit_gfx_desc, .spr = {.frame = 0, .anim = 0, .flipX = false, .x = 64, .y = 64}},
 };
 
 // --------
@@ -51,7 +50,7 @@ void scn_map_init(void)
     SHOW_BKG;
 
     // Load unit sprite
-    unit_load_gfx();
+    unit_load_gfx(unit_sprites[0].type, unit_sprites[0].gfx);
     static const palette_color_t black_palette[] = {RGB8(0, 0, 0), RGB8(159, 159, 159), RGB8(255, 0, 0), RGB8(0, 0, 0)};
     set_sprite_palette(1, 1, black_palette);
     SPRITES_8x8;
@@ -79,7 +78,7 @@ void scn_map_process(void)
     // Unit
     for (size_t i = 0; i < unit_sprites_count; i++) {
         unit_spr_update(&unit_sprites[i]);
-        unit_spr_draw(i, &unit_sprites[i].spr);
+        unit_spr_draw(&unit_sprites[i]);
 
         if (cursor_on_unit == i && a_just_pressed) {
             unit_enqueue(i, CMD_GO_UP);
