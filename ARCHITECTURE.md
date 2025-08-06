@@ -12,7 +12,7 @@ I don't know how to structure this thing,
 so I'm experimenting a bit with the organization of this code
 and writing down about it,
 in a stream-of-consciousness way,
-inhopas that this project doesn't get too spaghetti
+in hopes that this project doesn't get too spaghetti
 in less than a month.
 
 This will be a turn-based game,
