@@ -14,11 +14,12 @@
     "C_Cpp.errorSquiggles": "disabled",
     "explorer.fileNesting.enabled": true,
     "explorer.fileNesting.patterns": {
-        "*.png": "${capture}.c, ${capture}.h",
+        "*.c": "${capture}.h, ${capture}__*.c",
         "*.asm": "${capture}.lst, ${capture}.rst, ${capture}.sym, ${capture}.adb, ${capture}.o",
         "*.gb": "${capture}.map, ${capture}.noi, ${capture}.cdb, ${capture}.ihx",
+        "*.png": "${capture}.c, ${capture}.h",
         "Makefile": "*.ps1, *.bat, *.mk",
-        "*.c": "${capture}.h, ${capture}__*.c"
+        "Readme.md": "*.md, LICENSE*",
     },
     "workbench.editor.customLabels.patterns": {
         "*/res/*": "🖌️ ${filename}.${extname}",
