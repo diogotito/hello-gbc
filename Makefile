@@ -1,5 +1,5 @@
 #
-# A Makefile that compiles all .c and .s files in "src", "src/scene" and "res" 
+# A Makefile that compiles all .c and .s files in "src" and "res" 
 # subdirectories and places the output in a "obj" subdirectory
 #
 include common.mk
@@ -35,9 +35,11 @@ endif
 SRCDIR      = src
 SCNDIR     := ${SRCDIR}/scene
 GAMEDIR    := ${SRCDIR}/game
+DATADIR    := ${SRCDIR}/data
 # ENTITIESDIR := ${SRCDIR}/entities, for example
+# Maybe I should bring the "rwildcard" hack from RGBDS's template project here
 # ...
-CDIRS      := ${SRCDIR} ${SCNDIR} ${GAMEDIR}
+CDIRS      := ${SRCDIR} ${SCNDIR} ${GAMEDIR} ${DATADIR}
 
 OBJDIR      = obj
 RESDIR      = res
