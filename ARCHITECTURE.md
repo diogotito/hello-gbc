@@ -61,6 +61,23 @@ stateDiagram-v2
 
 ## Rendering
 
+### src/STAT_in_WRAM.c (WIP)
+
+Soon this will implement a reprogramable STAT ISR
+to handle different scanline effects throughout the game.
+
+Why reprogramable?
+Why in WRAM?
+Because I'm afraid that doing something as simple as
+turning off the WIN at the start of a scanline with `LY=LYC`
+requires an almost perfectly optimized sequence of SM83 instructions
+to be fed to the processor,
+so there aren't spare cycles for a nice ISR manager like GBDK's &mdash;
+a `jmp` to somewhere might be all that I can afford.
+But I'll want to use the STAT interrupt for other things!
+So that somewhere must be in writable memory &mdash; WRAM or HRAM.
+So I guess I'll be doing SMC on the Game Boy!
+
 ### src/ui.c
 
 Manages a UI window that can be moved to the top or the bottom of the screen.
