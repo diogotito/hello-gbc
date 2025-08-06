@@ -4,13 +4,19 @@ This is my first C project after a while
 and my first ambitious-ish game project for an 8-bit computer
 and my mind is very tainted by a decade and a half of
 [OOPs](https://www.youtube.com/watch?v=wo84LFzx5nI).
-And we set up ourselves to do an RPG.
+And we set up ourselves to do an SRPG.
 For a 3-month game jam.
 We are not overscoping at all!
 
 I don't know how to structure this thing,
 so I'm experimenting a bit with the organization of this code
 and writing down about it so that it doesn't get too spaghetti.
+
+This will be a turn-based game,
+so separating game simulation logic and state from rendering
+could be reasonable (I'm not dipping my toes on ECS on this one).
+But the target platform is an 8-bit embedded system with limited
+resources, so I feel I shouldn't force that separation too much.
 
 ## Control flow
 
