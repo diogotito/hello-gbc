@@ -53,8 +53,10 @@ The currently implemented scenes are:
 title: Scene flow
 ---
 stateDiagram-v2
-    [*] --> scn_title
-    scn_title --> scn_map
+    classDef code_id font-family:monospace
+    direction LR
+    [*] --> scn_title:::code_id
+    scn_title --> scn_map:::code_id
 ```
 
 ## Rendering
