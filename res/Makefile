@@ -17,6 +17,7 @@ OUTPUT_C_FILES := $(foreach png,$(wildcard $R/*.png),${png:.png=.h} ${png:.png=.
 # Targets
 # -------
 
+all: all_assets
 all_assets: ${OUTPUT_C_FILES}
 
 # Tilesets:
@@ -50,4 +51,4 @@ clean: clean_assets
 clean_assets:
 	-${RM} ${OUTPUT_C_FILES}
 
-.PHONY: all clean clean_assets
+.PHONY: all all_assets clean clean_assets

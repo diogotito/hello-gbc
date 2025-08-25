@@ -44,8 +44,6 @@ CDIRS      := ${SRCDIR} ${SCNDIR} ${GAMEDIR} ${DATADIR}
 OBJDIR      = obj
 RESDIR      = res
 
-include res/Makefile
-
 # ---------------------------------------
 # Variables for targets and prerequisites
 # ---------------------------------------
@@ -60,19 +58,28 @@ CSOURCES    = $(notdir $(filter-out ${PARTIALS},\
 ASMSOURCES  = $(foreach dir,${CDIRS},$(notdir $(wildcard ${dir}/*.s)))
 OBJS        = $(CSOURCES:%.c=${OBJDIR}/%.o) $(ASMSOURCES:%.s=${OBJDIR}/%.o)
 
-ifeq (${MAKELEVEL},0)
-$(info PARTIALS = ${PARTIALS})
-$(info OUTPUT_C_FILES = ${OUTPUT_C_FILES})
-$(info CSOURCES = ${CSOURCES})
-$(info OBJS     = ${OBJS})
-endif
+# $(info PARTIALS = ${PARTIALS})
+# $(info OUTPUT_C_FILES = ${OUTPUT_C_FILES})
+# $(info CSOURCES = ${CSOURCES})
+# $(info OBJS     = ${OBJS})
 
-# --------------
-# Default target
-# --------------
+# --------
+# Includes
+# --------
+
+include res/Makefile
+
+# ----------
+# Full build
+# ----------
 
 .DEFAULT_GOAL := all
-all:	prepare all_assets ${BINS}
+all:	${BINS}
+
+${OBJS}: | ${OBJDIR}
+
+${OBJDIR}:
+	-${MKDIR} ${OBJDIR}
 
 # -------
 # Targets
@@ -115,11 +122,8 @@ ${BINS}:	${OBJS}
 # Tasks and misc files
 # --------------------
 
-prepare:
-	-${MKDIR} ${OBJDIR}
-
 clean: clean_build
 clean_build:
 	${RM} ${OBJDIR}
 
-.PHONY: all prepare clean_build clean
+.PHONY: all clean clean_build
