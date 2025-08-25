@@ -7,7 +7,7 @@ endif
 
 # Silent, idempotent commands to create and delete directories and files
 # that work on Windows and *nix systems
-ifeq '${OS}' 'Windows_NT'
+ifeq '${OS}|${SHELL}' 'Windows_NT|' # Detects Windows outside MSYS (Git Bash)
 MKDIR = MD $(OBJDIR) 2>NUL || EXIT /B 0
 RM    = DEL /S/Q/F 2>NUL
 else
