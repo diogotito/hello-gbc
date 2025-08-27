@@ -52,8 +52,8 @@ BINS	    = ${OBJDIR}/${PROJECTNAME}.gbc
 
 PARTIALS    = $(foreach dir,${CDIRS} ${RESDIR},$(wildcard ${dir}/*__*__.c))
 CSOURCES    = $(notdir $(filter-out ${PARTIALS},\
-                $(foreach dir,${CDIRS},$(wildcard ${dir}/*.c))\
 				$(filter ${RESDIR}/%.c,${OUTPUT_C_FILES})\
+                $(foreach dir,${CDIRS},$(wildcard ${dir}/*.c))\
 				$(foreach dir,${RESDIR},$(wildcard ${dir}/*.c))))
 ASMSOURCES  = $(foreach dir,${CDIRS},$(notdir $(wildcard ${dir}/*.s)))
 OBJS        = $(CSOURCES:%.c=${OBJDIR}/%.o) $(ASMSOURCES:%.s=${OBJDIR}/%.o)
