@@ -4,6 +4,9 @@
 #include <gb/gb.h>
 #include <stdint.h>
 
+// These variables don't follow the <module>_<name> naming convention
+// (like "input_right_just_pressed") for brevity.
+
 extern uint8_t cur_joypad;
 extern int8_t cur_joy_dx;
 extern int8_t cur_joy_dy;

@@ -1,10 +1,4 @@
-#include <gb/gb.h>
-#include <gb/cgb.h>
-#include <gbdk/emu_debug.h>
-#include <gbdk/metasprites.h>
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdio.h>
+#include <gbdk/platform.h>
 
 #include "scene/manager.h"
 #include "scene/scn_title.h"
@@ -12,8 +6,10 @@
 
 void main(void)
 {
+    // Initialize scene manager with scn_title as the initial scene
 	scene_manager_init(&scn_title);
 
+    // Game loop
     while(1) {
         input_refresh();
         scene_process();
