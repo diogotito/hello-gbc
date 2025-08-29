@@ -6,6 +6,11 @@
 
 int8_t cur_scene_index = -1;
 scene_desc scene_stack[MAX_SCENES] = {{0}};
+// NOTE: There might be a possible optimization for accessing the current scene
+// by storing a copy of the struct in a global variable each time it changes.
+// The GBDK docs say it's not optimal to index arrays on the Game Boy.
+// However, the scene stack is only indexed once per frame
+// (6 at most when switching scenes) so that would be a micro-optimization.
 
 // Deferred returning and calling
 bool returning = false;
@@ -24,7 +29,8 @@ void scene_process()
     
     // Perform pending return and call, if any
     if (returning) {
-        scene_stack[cur_scene_index].finalize_fn();
+        if (scene_stack[cur_scene_index].finalize_fn)
+            scene_stack[cur_scene_index].finalize_fn();
         scene_stack[cur_scene_index].process_fn = nullptr;  // mark as returned
         --cur_scene_index;
         returning = false;
@@ -32,7 +38,8 @@ void scene_process()
     if (calling) {
         ++cur_scene_index;
         scene_stack[cur_scene_index] = *calling;  // Copy the "stack frame"
-        scene_stack[cur_scene_index].init_fn();
+        if (scene_stack[cur_scene_index].init_fn)
+            scene_stack[cur_scene_index].init_fn();
         calling = nullptr;
     }
 }
